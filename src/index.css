@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Outfit:wght@400;500;700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  /* COLORES → bg-primary, text-primary, border-primary, etc. */
+  --color-background: #060907;
+  --color-card:       #0e1310;
+  --color-text:       #ebf0ed;
+  --color-primary:    #48a377;
+  --color-secondary:  #226846;
+  --color-accent:     #239a60;
+  --color-border:     #223228;
+  --color-input:      #0a0f0c;
+  --color-surface:    #16261E;
+  --color-error:      #cc3333;
+
+  /* TIPOGRAFÍA → font-heading, font-body */
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body:    'Outfit', sans-serif;
+
+  /* TAMAÑOS DE FUENTE (nombres semánticos para no pisar el scale de Tailwind)
+     text-base (16px) y text-sm (14px) de Tailwind siguen disponibles.
+     → text-caption, text-subtitle-sm, text-subtitle, text-section, text-page, text-hero */
+  --text-caption:     0.750rem;  /* 12px — fechas, labels pequeños */
+  --text-subtitle-sm: 1.333rem;  /* 21px — subtítulos pequeños */
+  --text-subtitle:    1.777rem;  /* 28px — subtítulos */
+  --text-section:     2.369rem;  /* 38px — títulos de sección */
+  --text-page:        3.158rem;  /* 51px — títulos de página */
+  --text-hero:        4.210rem;  /* 67px — hero */
+
+  /* BORDER RADIUS → rounded-card, rounded-input */
+  --radius-card:  1rem;      /* 16px — tarjetas */
+  --radius-input: 0.625rem;  /* 10px — inputs y botones */
+}
