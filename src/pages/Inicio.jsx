@@ -100,7 +100,7 @@ export default function Inicio() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-surface">
         <div className="max-w-300 mx-auto px-12">
           <h2 className="text-text font-heading font-bold text-5xl leading-tight mb-8">
             ¿Listo para compartir<br />tu opinión musical?

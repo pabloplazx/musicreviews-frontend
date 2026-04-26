@@ -56,7 +56,13 @@ export default function Navbar() {
         </nav>
 
         {/* BOTONES */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          <Link to="/busqueda" className="text-muted hover:text-primary transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+            </svg>
+          </Link>
           <Link to="/login" className="px-4 py-2 rounded-input border border-primary text-primary font-heading
           font-medium hover:bg-primary hover:text-background transition-colors">
             Entrar

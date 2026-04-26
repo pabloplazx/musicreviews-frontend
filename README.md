@@ -31,15 +31,23 @@ musicreviews-frontend/
 │   │       ├── PortadaPlaceholder.jsx # Placeholder ♪ para portadas sin imagen
 │   │       ├── Estrellas.jsx          # Valoración 1-5 con soporte de medias estrellas
 │   │       ├── ResenaCard.jsx         # Tarjeta de reseña (portada + info + cita)
-│   │       └── AlbumCard.jsx          # Tarjeta de álbum con badge de posición
+│   │       ├── AlbumCard.jsx          # Tarjeta de álbum con badge de posición (rankings)
+│   │       ├── CatalogoCard.jsx       # Tarjeta de álbum con badge de género opcional
+│   │       ├── AlbumRow.jsx           # Fila compacta de álbum (búsqueda recientes)
+│   │       ├── FormInput.jsx          # Input de formulario con label y estado de error
+│   │       ├── GenreChip.jsx          # Chip de género/filtro activo e inactivo
+│   │       ├── SearchBar.jsx          # Barra de búsqueda con icono SVG
+│   │       ├── SelectOrden.jsx        # Selector desplegable estilizado
+│   │       └── Paginacion.jsx         # Paginación con flechas y puntos suspensivos
 │   ├── context/             # Contextos de React (autenticación, etc.) — pendiente
 │   ├── hooks/               # Custom hooks reutilizables — pendiente
 │   ├── pages/               # Una página por ruta de la aplicación
 │   │   ├── Inicio.jsx       # Página principal: Hero, Reseñas, Top Álbumes, CTA
-│   │   ├── Login.jsx        # Formulario de inicio de sesión
-│   │   ├── Registro.jsx     # Formulario de registro
-│   │   ├── Catalogo.jsx     # Catálogo de álbumes con filtros
-│   │   └── Rankings.jsx     # Rankings y estadísticas globales
+│   │   ├── Login.jsx        # Formulario de inicio de sesión con estado de error
+│   │   ├── Registro.jsx     # Formulario de registro (4 campos)
+│   │   ├── Catalogo.jsx     # Catálogo con filtros, búsqueda, orden y paginación
+│   │   ├── Busqueda.jsx     # Búsqueda global con tendencias y estado sin resultados
+│   │   └── Rankings.jsx     # Rankings y estadísticas globales — pendiente
 │   ├── services/            # Llamadas a la API REST del backend — pendiente
 │   ├── App.jsx              # Configuración de rutas y layout global
 │   ├── index.css            # Design system: tokens de color y tipografía (Tailwind v4)
@@ -85,10 +93,11 @@ El design system está definido en `src/index.css` mediante directivas `@theme` 
 | Ruta | Página | Estado |
 |---|---|---|
 | `/` | Inicio | Implementada |
-| `/login` | Login | Placeholder |
-| `/registro` | Registro | Placeholder |
-| `/catalogo` | Catálogo | Placeholder |
-| `/rankings` | Rankings | Placeholder |
+| `/login` | Login | Implementada |
+| `/registro` | Registro | Implementada |
+| `/catalogo` | Catálogo | Implementada |
+| `/busqueda` | Búsqueda | Implementada |
+| `/rankings` | Rankings | Pendiente |
 
 ---
 
