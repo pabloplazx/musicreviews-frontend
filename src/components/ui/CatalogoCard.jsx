@@ -1,8 +1,9 @@
+import { Link } from "react-router-dom";
 import PortadaPlaceholder from "./PortadaPlaceholder";
 
-export default function CatalogoCard({ album, artista, rating, genero, portada }) {
+export default function CatalogoCard({ id = 1, album, artista, rating, genero, portada }) {
   return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden flex flex-col">
+    <Link to={`/album/${id}`} className="bg-card border border-border rounded-xl overflow-hidden flex flex-col hover:border-primary transition-colors">
       <div className="relative">
         {portada
           ? <img src={portada} alt={album} className="w-full aspect-square object-cover" />
@@ -19,6 +20,6 @@ export default function CatalogoCard({ album, artista, rating, genero, portada }
         <p className="text-muted font-body text-xs truncate">{artista}</p>
         <p className="text-primary font-body text-xs">★ {rating.toFixed(1)}</p>
       </div>
-    </div>
+    </Link>
   );
 }

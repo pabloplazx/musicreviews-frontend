@@ -1,9 +1,10 @@
+import { Link } from "react-router-dom";
 import PortadaPlaceholder from "./PortadaPlaceholder";
 import Estrellas from "./Estrellas";
 
-export default function AlbumCard({ posicion, album, artista, rating, portada }) {
+export default function AlbumCard({ id = 1, posicion, album, artista, rating, portada }) {
   return (
-    <div className="bg-card border border-border rounded-xl overflow-hidden flex flex-col">
+    <Link to={`/album/${id}`} className="bg-card border border-border rounded-xl overflow-hidden flex flex-col hover:border-primary transition-colors">
       <div className="relative">
         {portada
           ? <img src={portada} alt={album} className="w-full aspect-square object-cover" />
@@ -18,6 +19,6 @@ export default function AlbumCard({ posicion, album, artista, rating, portada })
         <p className="text-muted font-body text-xs">{artista}</p>
         <Estrellas cantidad={rating} />
       </div>
-    </div>
+    </Link>
   );
 }
