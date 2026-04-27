@@ -27,18 +27,19 @@ musicreviews-frontend/
 │   │   │   ├── Navbar.jsx   # Barra de navegación superior (sticky)
 │   │   │   └── Footer.jsx   # Pie de página con links y copyright
 │   │   └── ui/              # Componentes reutilizables de interfaz
-│   │       ├── SectionTitle.jsx       # Título de sección con línea verde
-│   │       ├── PortadaPlaceholder.jsx # Placeholder ♪ para portadas sin imagen
-│   │       ├── Estrellas.jsx          # Valoración 1-5 con soporte de medias estrellas
-│   │       ├── ResenaCard.jsx         # Tarjeta de reseña (portada + info + cita)
-│   │       ├── AlbumCard.jsx          # Tarjeta de álbum con badge de posición (rankings)
-│   │       ├── CatalogoCard.jsx       # Tarjeta de álbum con badge de género opcional
-│   │       ├── AlbumRow.jsx           # Fila compacta de álbum (búsqueda recientes)
-│   │       ├── FormInput.jsx          # Input de formulario con label y estado de error
-│   │       ├── GenreChip.jsx          # Chip de género/filtro activo e inactivo
-│   │       ├── SearchBar.jsx          # Barra de búsqueda con icono SVG
-│   │       ├── SelectOrden.jsx        # Selector desplegable estilizado
-│   │       └── Paginacion.jsx         # Paginación con flechas y puntos suspensivos
+│   │       ├── SectionTitle.jsx          # Título de sección con línea verde
+│   │       ├── PortadaPlaceholder.jsx    # Placeholder ♪ para portadas sin imagen
+│   │       ├── Estrellas.jsx             # Valoración 1-5 con medias estrellas (display)
+│   │       ├── EstrellasInteractivas.jsx # Selector de puntuación interactivo con medias estrellas
+│   │       ├── ResenaCard.jsx            # Tarjeta de reseña (portada + info + cita)
+│   │       ├── AlbumCard.jsx             # Tarjeta de álbum con badge de posición (rankings)
+│   │       ├── CatalogoCard.jsx          # Tarjeta de álbum con badge de género opcional
+│   │       ├── AlbumRow.jsx              # Fila compacta de álbum (búsqueda recientes)
+│   │       ├── FormInput.jsx             # Input de formulario con label y estado de error
+│   │       ├── GenreChip.jsx             # Chip de género/filtro activo e inactivo
+│   │       ├── SearchBar.jsx             # Barra de búsqueda con icono SVG
+│   │       ├── SelectOrden.jsx           # Selector desplegable estilizado
+│   │       └── Paginacion.jsx            # Paginación con flechas y puntos suspensivos
 │   ├── context/             # Contextos de React (autenticación, etc.) — pendiente
 │   ├── hooks/               # Custom hooks reutilizables — pendiente
 │   ├── pages/               # Una página por ruta de la aplicación
@@ -47,13 +48,20 @@ musicreviews-frontend/
 │   │   ├── Registro.jsx     # Formulario de registro (4 campos)
 │   │   ├── Catalogo.jsx     # Catálogo con filtros, búsqueda, orden y paginación
 │   │   ├── Busqueda.jsx     # Búsqueda global con tendencias y estado sin resultados
-│   │   └── Rankings.jsx     # Rankings y estadísticas globales — pendiente
+│   │   ├── Rankings.jsx     # Rankings globales: top álbumes, artistas, géneros y actividad
+│   │   ├── DetalleAlbum.jsx # Detalle de álbum: info, favorito toggle, reseñas, más del artista
+│   │   ├── DetalleArtista.jsx # Detalle de artista: bio, stats, discografía, reseñas recientes
+│   │   ├── CrearResena.jsx  # Formulario de nueva reseña (pantalla completa sin Navbar)
+│   │   ├── EditarResena.jsx # Formulario de edición de reseña con datos pre-rellenados
+│   │   ├── PerfilUsuario.jsx # Perfil público: avatar, stats, tabs Reseñas/Favoritos
+│   │   ├── EditarPerfil.jsx # Edición de perfil propio (pantalla completa sin Navbar)
+│   │   ├── MisFavoritos.jsx # Lista de álbumes favoritos del usuario con estado vacío
+│   │   ├── PanelAdmin.jsx   # Panel de administración: stats, contenido, usuarios, moderación
+│   │   └── NotFound.jsx     # Página 404 para rutas desconocidas
 │   ├── services/            # Llamadas a la API REST del backend — pendiente
-│   ├── App.jsx              # Configuración de rutas y layout global
+│   ├── App.jsx              # Configuración de rutas, layout global y patrón SIN_NAVBAR
 │   ├── index.css            # Design system: tokens de color y tipografía (Tailwind v4)
 │   └── main.jsx             # Punto de entrada de la aplicación
-├── docs/
-│   └── tailwind-guide.md    # Referencia de todas las clases Tailwind usadas
 ├── index.html               # HTML raíz (punto de montaje de React)
 ├── vite.config.js           # Configuración de Vite
 └── package.json
@@ -71,13 +79,14 @@ El design system está definido en `src/index.css` mediante directivas `@theme` 
 |---|---|---|
 | `background` | `#060907` | Fondo principal |
 | `card` | `#0e1310` | Fondo de tarjetas, navbar, footer |
+| `surface` | `#16261E` | Secciones CTA y bloques destacados |
 | `primary` | `#48a377` | Botones, links activos, acentos |
 | `secondary` | `#226846` | Hover de botones principales |
 | `text` | `#ebf0ed` | Texto principal |
 | `muted` | `#ebf0ed` al 50% | Texto secundario y metadatos |
 | `border` | `#223228` | Bordes de tarjetas e inputs |
 | `input` | `#0a0f0c` | Fondo de campos de formulario |
-| `error` | `#cc3333` | Estados de error |
+| `error` | `#cc3333` | Estados de error, zona de peligro |
 
 ### Tipografía
 
@@ -90,14 +99,23 @@ El design system está definido en `src/index.css` mediante directivas `@theme` 
 
 ## Rutas
 
-| Ruta | Página | Estado |
+| Ruta | Página | Navbar |
 |---|---|---|
-| `/` | Inicio | Implementada |
-| `/login` | Login | Implementada |
-| `/registro` | Registro | Implementada |
-| `/catalogo` | Catálogo | Implementada |
-| `/busqueda` | Búsqueda | Implementada |
-| `/rankings` | Rankings | Pendiente |
+| `/` | Inicio | Sí |
+| `/login` | Login | Sí |
+| `/registro` | Registro | Sí |
+| `/catalogo` | Catálogo | Sí |
+| `/busqueda` | Búsqueda | Sí |
+| `/rankings` | Rankings | Sí |
+| `/album/:id` | Detalle de álbum | Sí |
+| `/artista/:id` | Detalle de artista | Sí |
+| `/crear-resena` | Crear reseña | No (pantalla completa) |
+| `/editar-resena` | Editar reseña | No (pantalla completa) |
+| `/perfil/:username` | Perfil de usuario | Sí |
+| `/editar-perfil` | Editar perfil | No (pantalla completa) |
+| `/favoritos` | Mis favoritos | Sí |
+| `/admin` | Panel de administración | Sí |
+| `*` | 404 Not Found | Sí |
 
 ---
 
@@ -118,4 +136,10 @@ npm run build
 
 ## Diseño de referencia
 
-El prototipo visual está en Figma (archivo `Prototipo`, 15 pantallas diseñadas) e incluye todas las páginas de la aplicación: inicio, catálogo, detalle de álbum, perfil de usuario, búsqueda, crear/editar reseña, estadísticas, panel de administración y más.
+El prototipo visual está en Figma (archivo `Prototipo`, 15 pantallas diseñadas) e incluye todas las páginas de la aplicación. El desarrollo se realizó conectando directamente con el plugin **Figma Desktop Bridge MCP** para garantizar fidelidad con los diseños.
+
+---
+
+## Estado del proyecto
+
+**Frontend: 100% completado** — 15 pantallas implementadas con datos mock listos para conectar al backend REST ya desarrollado (Spring Boot + MySQL/Aiven).
