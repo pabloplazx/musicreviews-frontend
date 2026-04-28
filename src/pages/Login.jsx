@@ -1,11 +1,16 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import FormInput from "../components/ui/FormInput";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Si venimos rebotados desde una RutaProtegida, location.state.from guarda
+  // la URL original para volver a ella tras autenticar. Si no, al home.
+  const from = location.state?.from?.pathname || "/";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,7 +23,9 @@ export default function Login() {
     setCargando(true);
     try {
       await login(email, password);
-      navigate("/");
+      // replace evita que /login quede en el historial — al pulsar atrás no
+      // vuelve al formulario que ya completó.
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message);
     } finally {

@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import RutaProtegida from "./components/routing/RutaProtegida";
+import RutaAdmin from "./components/routing/RutaAdmin";
 import Inicio from "./pages/Inicio.jsx";
 import Login from "./pages/Login.jsx";
 import Registro from "./pages/Registro.jsx";
@@ -27,6 +29,7 @@ function Layout() {
     <div className="bg-background min-h-screen text-text font-body">
       {!sinNavbar && <Navbar />}
       <Routes>
+        {/* Rutas públicas — accesibles sin sesión */}
         <Route path="/" element={<Inicio />} />
         <Route path="/login" element={<Login />} />
         <Route path="/registro" element={<Registro />} />
@@ -35,12 +38,21 @@ function Layout() {
         <Route path="/busqueda" element={<Busqueda />} />
         <Route path="/album/:id" element={<DetalleAlbum />} />
         <Route path="/artista/:id" element={<DetalleArtista />} />
-        <Route path="/crear-resena" element={<CrearResena />} />
-        <Route path="/editar-resena" element={<EditarResena />} />
         <Route path="/perfil/:username" element={<PerfilUsuario />} />
-        <Route path="/editar-perfil" element={<EditarPerfil />} />
-        <Route path="/favoritos" element={<MisFavoritos />} />
-        <Route path="/admin" element={<PanelAdmin />} />
+
+        {/* Rutas protegidas — requieren sesión activa */}
+        <Route element={<RutaProtegida />}>
+          <Route path="/favoritos" element={<MisFavoritos />} />
+          <Route path="/crear-resena" element={<CrearResena />} />
+          <Route path="/editar-resena" element={<EditarResena />} />
+          <Route path="/editar-perfil" element={<EditarPerfil />} />
+        </Route>
+
+        {/* Rutas solo ADMIN */}
+        <Route element={<RutaAdmin />}>
+          <Route path="/admin" element={<PanelAdmin />} />
+        </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
       {!sinNavbar && <Footer />}
