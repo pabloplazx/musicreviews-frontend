@@ -1,68 +1,109 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import PortadaPlaceholder from "../components/ui/PortadaPlaceholder";
 import Estrellas from "../components/ui/Estrellas";
 import SectionTitle from "../components/ui/SectionTitle";
+import { useAuth } from "../context/AuthContext";
+import { getAlbum, getAlbumes } from "../services/albumes";
+import { getResenasPorAlbum } from "../services/resenas";
+import { esFavorito, agregarFavorito, quitarFavorito } from "../services/favoritos";
 
-// Datos mock — se reemplazarán con fetch al backend usando el id de la URL
-const ALBUM = {
-  titulo: "DAMN.",
-  artista: "Kendrick Lamar",
-  anio: 2017,
-  genero: "Hip-Hop",
-  rating: 4.8,
-  totalResenas: 1204,
-  descripcion:
-    "Cuarto álbum de Kendrick Lamar. Premio Pulitzer 2018. El primero fuera de la música clásica y el jazz.",
-};
-
-const RESENAS = [
-  {
-    id: 1,
-    usuario: "maria_music",
-    fecha: "15 abr 2026",
-    rating: 5,
-    texto:
-      '"Perfecto. Kendrick en su estado más vulnerable y poderoso a la vez. Una obra que trasciende el género."',
-  },
-  {
-    id: 2,
-    usuario: "rockfan92",
-    fecha: "1 mar 2026",
-    rating: 3.5,
-    texto:
-      '"DNA y HUMBLE son himnos. Algún track del medio flojea pero sigue siendo una obra maestra del rap moderno."',
-  },
-  {
-    id: 3,
-    usuario: "musiclover_es",
-    fecha: "20 ene 2026",
-    rating: 5,
-    texto:
-      '"El mejor álbum de rap de la década. Cada escucha revela algo nuevo. Absolutamente brillante."',
-  },
-];
-
-const MAS_ALBUMS = [
-  { id: 1, titulo: "good kid, m.A.A.d city" },
-  { id: 2, titulo: "To Pimp a Butterfly" },
-  { id: 3, titulo: "Mr. Morale" },
-  { id: 4, titulo: "Section.80" },
-];
-
-function Avatar({ usuario }) {
+function Avatar({ nombre }) {
   return (
     <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center shrink-0">
       <span className="text-background font-heading font-bold text-sm uppercase">
-        {usuario[0]}
+        {nombre?.[0] ?? "?"}
       </span>
     </div>
   );
 }
 
+function formatearFecha(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+}
+
 export default function DetalleAlbum() {
+  const { id } = useParams();
+  const { usuario, token } = useAuth();
+
+  const [album, setAlbum] = useState(null);
+  const [resenas, setResenas] = useState(null);
+  const [masDelArtista, setMasDelArtista] = useState(null);
   const [favorito, setFavorito] = useState(false);
-  const tieneResenas = RESENAS.length > 0;
+  const [error, setError] = useState(null);
+  const [favoritoOcupado, setFavoritoOcupado] = useState(false); // evitar doble click
+
+  // Cargar álbum + reseñas + estado de favorito al montar / cambiar id
+  useEffect(() => {
+    Promise.all([getAlbum(id), getResenasPorAlbum(id)])
+      .then(([a, r]) => {
+        setAlbum(a);
+        setResenas(r);
+        // Una vez tenemos el álbum, pedimos los demás del artista
+        return getAlbumes({ artistaId: a.artista.id, size: 5 });
+      })
+      .then((paginaAlbumes) => {
+        // Filtrar el álbum actual
+        setMasDelArtista(paginaAlbumes.content.filter((al) => al.id !== Number(id)).slice(0, 4));
+      })
+      .catch((err) => setError(err.message));
+  }, [id]);
+
+  // Si hay sesión, comprobar si el álbum ya está en favoritos del usuario
+  useEffect(() => {
+    if (!usuario || !token) return;
+    esFavorito(usuario.id, Number(id), token)
+      .then(setFavorito)
+      .catch(() => {}); // silencioso, no bloquea la pantalla
+  }, [usuario, token, id]);
+
+  // Calcular puntuación media de las reseñas reales
+  const puntuacionMedia = resenas && resenas.length > 0
+    ? resenas.reduce((acc, r) => acc + r.puntuacion, 0) / resenas.length
+    : null;
+
+  async function handleToggleFavorito() {
+    if (!usuario || !token) {
+      // Sin sesión: redirigir a login (podríamos usar navigate con from, pero
+      // mantengo simple — el navbar ya muestra los botones de auth).
+      return;
+    }
+    setFavoritoOcupado(true);
+    try {
+      if (favorito) {
+        await quitarFavorito(usuario.id, Number(id), token);
+        setFavorito(false);
+      } else {
+        await agregarFavorito(usuario.id, Number(id), token);
+        setFavorito(true);
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setFavoritoOcupado(false);
+    }
+  }
+
+  if (error) {
+    return (
+      <main className="bg-background min-h-screen py-20 text-center">
+        <p className="text-error font-body">No se pudo cargar el álbum: {error}</p>
+        <Link to="/catalogo" className="text-primary hover:underline">← Volver al catálogo</Link>
+      </main>
+    );
+  }
+
+  if (!album) {
+    return (
+      <main className="bg-background min-h-screen py-20 text-center">
+        <p className="text-muted font-body">Cargando álbum…</p>
+      </main>
+    );
+  }
+
+  const tieneResenas = resenas && resenas.length > 0;
+  const anio = album.fechaLanzamiento ? new Date(album.fechaLanzamiento).getFullYear() : null;
 
   return (
     <main className="bg-background min-h-screen">
@@ -72,44 +113,66 @@ export default function DetalleAlbum() {
         <div className="max-w-300 mx-auto px-12 flex gap-10">
 
           {/* Portada */}
-          <PortadaPlaceholder className="w-48 h-48 rounded-xl shrink-0" />
+          {album.portada
+            ? <img src={album.portada} alt={album.titulo} className="w-48 h-48 rounded-xl object-cover shrink-0" />
+            : <PortadaPlaceholder className="w-48 h-48 rounded-xl shrink-0" />
+          }
 
           {/* Info */}
           <div className="flex flex-col justify-center gap-3">
-            <span className="self-start px-3 py-1 bg-primary/20 text-primary font-body text-xs rounded-full">
-              {ALBUM.genero}
-            </span>
-            <h1 className="text-text font-heading font-bold text-4xl">{ALBUM.titulo}</h1>
-            <p className="text-muted font-body text-sm">
-              <Link to="/artista/1" className="hover:text-primary transition-colors">{ALBUM.artista}</Link>
-              {" "}· {ALBUM.anio}
-            </p>
-            <div className="flex items-center gap-2">
-              <Estrellas cantidad={ALBUM.rating} />
-              <span className="text-primary font-heading font-bold text-sm">{ALBUM.rating}</span>
-              <span className="text-muted font-body text-xs">
-                ({ALBUM.totalResenas.toLocaleString("es-ES")} reseñas)
+            {album.genero && (
+              <span className="self-start px-3 py-1 bg-primary/20 text-primary font-body text-xs rounded-full capitalize">
+                {album.genero}
               </span>
-            </div>
+            )}
+            <h1 className="text-text font-heading font-bold text-4xl">{album.titulo}</h1>
+            <p className="text-muted font-body text-sm">
+              <Link to={`/artista/${album.artista.id}`} className="hover:text-primary transition-colors">
+                {album.artista.nombre}
+              </Link>
+              {anio && ` · ${anio}`}
+            </p>
+            {puntuacionMedia != null && (
+              <div className="flex items-center gap-2">
+                <Estrellas cantidad={puntuacionMedia} />
+                <span className="text-primary font-heading font-bold text-sm">{puntuacionMedia.toFixed(1)}</span>
+                <span className="text-muted font-body text-xs">
+                  ({resenas.length} {resenas.length === 1 ? "reseña" : "reseñas"})
+                </span>
+              </div>
+            )}
             <div className="flex gap-3">
               <Link
                 to="/crear-resena"
+                state={{ albumId: album.id }}
                 className="flex items-center gap-2 bg-primary text-background font-body text-sm font-medium px-5 py-2.5 rounded-input hover:bg-secondary transition-colors"
               >
                 ✎ Escribir reseña
               </Link>
-              <button
-                onClick={() => setFavorito(!favorito)}
-                className={`flex items-center gap-2 border font-body text-sm px-5 py-2.5 rounded-input transition-colors ${
-                  favorito
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border text-text hover:border-primary hover:text-primary"
-                }`}
-              >
-                {favorito ? "♥ En favoritos" : "♡ Añadir a favoritos"}
-              </button>
+              {usuario ? (
+                <button
+                  onClick={handleToggleFavorito}
+                  disabled={favoritoOcupado}
+                  className={`flex items-center gap-2 border font-body text-sm px-5 py-2.5 rounded-input transition-colors disabled:opacity-50 ${
+                    favorito
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-text hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  {favorito ? "♥ En favoritos" : "♡ Añadir a favoritos"}
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="flex items-center gap-2 border border-border text-muted font-body text-sm px-5 py-2.5 rounded-input hover:border-primary hover:text-primary transition-colors"
+                >
+                  ♡ Inicia sesión para guardar
+                </Link>
+              )}
             </div>
-            <p className="text-muted font-body text-sm max-w-lg">{ALBUM.descripcion}</p>
+            {album.descripcion && (
+              <p className="text-muted font-body text-sm max-w-lg">{album.descripcion}</p>
+            )}
           </div>
 
         </div>
@@ -120,24 +183,37 @@ export default function DetalleAlbum() {
         {/* Reseñas */}
         <SectionTitle>Reseñas</SectionTitle>
 
-        {tieneResenas ? (
+        {!resenas && <p className="text-muted font-body py-4">Cargando reseñas…</p>}
+
+        {tieneResenas && (
           <div className="flex flex-col gap-4 mb-12">
-            {RESENAS.map((r) => (
+            {resenas.map((r) => (
               <div key={r.id} className="bg-card border border-border rounded-xl px-6 py-5 flex gap-4">
-                <Avatar usuario={r.usuario} />
-                <div className="flex flex-col gap-1 flex-1">
+                <Avatar nombre={r.usuario?.username} />
+                <div className="flex flex-col gap-1 flex-1 min-w-0">
                   <div className="flex items-center gap-3">
-                    <span className="text-text font-body text-sm font-medium">{r.usuario}</span>
-                    <span className="text-muted font-body text-xs">{r.fecha}</span>
+                    <Link
+                      to={`/perfil/${r.usuario?.username}`}
+                      className="text-text font-body text-sm font-medium hover:text-primary transition-colors"
+                    >
+                      {r.usuario?.username}
+                    </Link>
+                    <span className="text-muted font-body text-xs">
+                      {formatearFecha(r.fechaCreacion)}
+                      {r.fechaEdicion && " · editada"}
+                    </span>
                   </div>
-                  <Estrellas cantidad={r.rating} />
-                  <p className="text-muted font-body text-sm mt-1">{r.texto}</p>
+                  <Estrellas cantidad={r.puntuacion} />
+                  {r.comentario && (
+                    <p className="text-muted font-body text-sm mt-1">"{r.comentario}"</p>
+                  )}
                 </div>
               </div>
             ))}
           </div>
-        ) : (
-          // Estado vacío — se mostrará cuando no haya reseñas del backend
+        )}
+
+        {resenas && !tieneResenas && (
           <div className="flex flex-col items-center gap-4 py-20 mb-12">
             <span className="text-primary text-5xl">♪</span>
             <p className="text-text font-heading font-bold text-xl">Sé el primero en reseñar</p>
@@ -146,6 +222,7 @@ export default function DetalleAlbum() {
             </p>
             <Link
               to="/crear-resena"
+              state={{ albumId: album.id }}
               className="bg-primary text-background font-body text-sm font-medium px-6 py-2.5 rounded-input hover:bg-secondary transition-colors"
             >
               Escribir reseña
@@ -153,18 +230,23 @@ export default function DetalleAlbum() {
           </div>
         )}
 
-        {/* Más de [Artista] */}
-        <div>
-          <SectionTitle>Más de {ALBUM.artista}</SectionTitle>
-          <div className="grid grid-cols-4 gap-6">
-            {MAS_ALBUMS.map((a) => (
-              <Link key={a.id} to={`/album/${a.id}`} className="flex flex-col gap-2 group">
-                <PortadaPlaceholder className="w-full aspect-square rounded-xl group-hover:opacity-80 transition-opacity" />
-                <p className="text-text font-body text-sm truncate">{a.titulo}</p>
-              </Link>
-            ))}
+        {/* Más del artista */}
+        {masDelArtista && masDelArtista.length > 0 && (
+          <div>
+            <SectionTitle>Más de {album.artista.nombre}</SectionTitle>
+            <div className="grid grid-cols-4 gap-6">
+              {masDelArtista.map((a) => (
+                <Link key={a.id} to={`/album/${a.id}`} className="flex flex-col gap-2 group">
+                  {a.portada
+                    ? <img src={a.portada} alt={a.titulo} className="w-full aspect-square rounded-xl object-cover group-hover:opacity-80 transition-opacity" />
+                    : <PortadaPlaceholder className="w-full aspect-square rounded-xl group-hover:opacity-80 transition-opacity" />
+                  }
+                  <p className="text-text font-body text-sm truncate">{a.titulo}</p>
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </main>
