@@ -20,3 +20,18 @@ export async function getArtista(id) {
   }
   return res.json();
 }
+
+// POST /api/artistas — solo ADMIN. Crea un artista con los datos básicos.
+export async function crearArtista(datos, token) {
+  const res = await fetch(`${API}/artistas`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(datos),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.mensaje || `Error al crear artista (HTTP ${res.status})`);
+  return data;
+}

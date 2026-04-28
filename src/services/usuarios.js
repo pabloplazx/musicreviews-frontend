@@ -26,3 +26,27 @@ export async function actualizarUsuario(id, datos, token) {
   if (!res.ok) throw new Error(data.mensaje || `Error al actualizar perfil (HTTP ${res.status})`);
   return data;
 }
+
+// GET /api/usuarios — solo ADMIN. Lista completa de usuarios (incluye email).
+export async function getUsuarios(token) {
+  const res = await fetch(`${API}/usuarios`, {
+    headers: { "Authorization": `Bearer ${token}` },
+  });
+  if (!res.ok) throw new Error(`Error al cargar usuarios (HTTP ${res.status})`);
+  return res.json();
+}
+
+// PATCH /api/usuarios/{id}/activo — solo ADMIN. Activa o desactiva una cuenta.
+export async function cambiarEstadoActivo(id, activo, token) {
+  const res = await fetch(`${API}/usuarios/${id}/activo`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify({ activo }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.mensaje || `Error al cambiar estado (HTTP ${res.status})`);
+  return data;
+}
