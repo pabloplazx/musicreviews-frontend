@@ -5,7 +5,7 @@ import Estrellas from "../components/ui/Estrellas";
 import SectionTitle from "../components/ui/SectionTitle";
 import { useAuth } from "../context/AuthContext";
 import { getAlbum, getAlbumes } from "../services/albumes";
-import { getResenasPorAlbum } from "../services/resenas";
+import { getResenasPorAlbum, getResenaUsuarioAlbum } from "../services/resenas";
 import { esFavorito, agregarFavorito, quitarFavorito } from "../services/favoritos";
 
 function Avatar({ nombre }) {
@@ -31,6 +31,7 @@ export default function DetalleAlbum() {
   const [resenas, setResenas] = useState(null);
   const [masDelArtista, setMasDelArtista] = useState(null);
   const [favorito, setFavorito] = useState(false);
+  const [miResena, setMiResena] = useState(null); // null = no tiene; objeto = ya hay reseña
   const [error, setError] = useState(null);
   const [favoritoOcupado, setFavoritoOcupado] = useState(false); // evitar doble click
 
@@ -57,6 +58,18 @@ export default function DetalleAlbum() {
       .then(setFavorito)
       .catch(() => {}); // silencioso, no bloquea la pantalla
   }, [usuario, token, id]);
+
+  // Si hay sesión, comprobar si el usuario ya tiene reseña para este álbum
+  // (para cambiar el botón "Escribir reseña" por "Editar mi reseña").
+  useEffect(() => {
+    if (!usuario) {
+      setMiResena(null);
+      return;
+    }
+    getResenaUsuarioAlbum(usuario.id, Number(id))
+      .then(setMiResena)
+      .catch(() => setMiResena(null));
+  }, [usuario, id]);
 
   // Calcular puntuación media de las reseñas reales
   const puntuacionMedia = resenas && resenas.length > 0
@@ -142,13 +155,23 @@ export default function DetalleAlbum() {
               </div>
             )}
             <div className="flex gap-3">
-              <Link
-                to="/crear-resena"
-                state={{ albumId: album.id }}
-                className="flex items-center gap-2 bg-primary text-background font-body text-sm font-medium px-5 py-2.5 rounded-input hover:bg-secondary transition-colors"
-              >
-                ✎ Escribir reseña
-              </Link>
+              {miResena ? (
+                <Link
+                  to="/editar-resena"
+                  state={{ albumId: album.id }}
+                  className="flex items-center gap-2 bg-primary text-background font-body text-sm font-medium px-5 py-2.5 rounded-input hover:bg-secondary transition-colors"
+                >
+                  ✎ Editar mi reseña
+                </Link>
+              ) : (
+                <Link
+                  to="/crear-resena"
+                  state={{ albumId: album.id }}
+                  className="flex items-center gap-2 bg-primary text-background font-body text-sm font-medium px-5 py-2.5 rounded-input hover:bg-secondary transition-colors"
+                >
+                  ✎ Escribir reseña
+                </Link>
+              )}
               {usuario ? (
                 <button
                   onClick={handleToggleFavorito}

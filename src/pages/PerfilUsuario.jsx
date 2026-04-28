@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Estrellas from "../components/ui/Estrellas";
 import PortadaPlaceholder from "../components/ui/PortadaPlaceholder";
 import { useAuth } from "../context/AuthContext";
@@ -21,6 +21,7 @@ function formatearMes(iso) {
 
 export default function PerfilUsuario() {
   const { username } = useParams();
+  const navigate = useNavigate();
   const { usuario: sesion, token } = useAuth();
 
   const [perfil, setPerfil] = useState(null);
@@ -160,7 +161,7 @@ export default function PerfilUsuario() {
                   <Link
                     key={r.id}
                     to={`/album/${r.album.id}`}
-                    className="bg-card border border-border rounded-xl p-5 flex gap-5 hover:border-primary transition-colors"
+                    className="bg-card border border-border rounded-xl p-5 flex gap-5 hover:border-primary transition-colors relative"
                   >
                     {r.album.portada
                       ? <img src={r.album.portada} alt={r.album.titulo} className="w-24 h-24 rounded-lg object-cover shrink-0" />
@@ -174,7 +175,21 @@ export default function PerfilUsuario() {
                         <p className="text-muted font-body text-sm italic mt-1 line-clamp-2">"{r.comentario}"</p>
                       )}
                     </div>
-                    <span className="text-muted font-body text-xs shrink-0 pt-1">{formatearFecha(r.fechaCreacion)}</span>
+                    <div className="flex flex-col items-end gap-2 shrink-0">
+                      <span className="text-muted font-body text-xs">{formatearFecha(r.fechaCreacion)}</span>
+                      {esMiPerfil && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            navigate("/editar-resena", { state: { albumId: r.album.id } });
+                          }}
+                          className="text-primary font-body text-xs hover:underline"
+                        >
+                          ✎ Editar
+                        </button>
+                      )}
+                    </div>
                   </Link>
                 ))}
               </div>
