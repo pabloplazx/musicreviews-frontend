@@ -7,10 +7,14 @@ import Paginacion from "../components/ui/Paginacion";
 import { getAlbumes } from "../services/albumes";
 import { getGeneros } from "../services/estadisticas";
 
-// El backend solo soporta orden por título ascendente. Para añadir "mejor
-// valorados" o "recientes" haría falta extender AlbumController con un
-// parámetro sort. De momento solo se ofrece A→Z (el default).
-const OPCIONES_ORDEN = [{ value: "az", label: "A → Z" }];
+// El backend acepta sort=az|za|recientes|antiguos en /api/albumes.
+// "Mejor valorados" requeriría agregar reseñas — fuera de alcance.
+const OPCIONES_ORDEN = [
+  { value: "az", label: "A → Z" },
+  { value: "za", label: "Z → A" },
+  { value: "recientes", label: "Más recientes" },
+  { value: "antiguos", label: "Más antiguos" },
+];
 
 const POR_PAGINA = 10;
 
@@ -18,6 +22,7 @@ export default function Catalogo() {
   // Inputs del usuario
   const [busqueda, setBusqueda] = useState("");
   const [generoActivo, setGeneroActivo] = useState("Todos");
+  const [orden, setOrden] = useState("az");
   const [pagina, setPagina] = useState(1); // 1-based en la UI, se convierte a 0-based en el fetch
 
   // Datos del backend
@@ -50,6 +55,7 @@ export default function Catalogo() {
         // q busca tanto en título de álbum como en nombre de artista — más útil para el usuario.
         q: busqueda || undefined,
         genero: generoActivo !== "Todos" ? generoActivo : undefined,
+        sort: orden,
       })
         .then((res) => {
           setDatos(res);
@@ -60,7 +66,7 @@ export default function Catalogo() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [busqueda, generoActivo, pagina]);
+  }, [busqueda, generoActivo, orden, pagina]);
 
   function handleGenero(genero) {
     setGeneroActivo(genero);
@@ -113,7 +119,11 @@ export default function Catalogo() {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <span className="text-muted font-body text-sm">Ordenar por:</span>
-            <SelectOrden opciones={OPCIONES_ORDEN} value="az" onChange={() => {}} />
+            <SelectOrden
+              opciones={OPCIONES_ORDEN}
+              value={orden}
+              onChange={(e) => { setOrden(e.target.value); setPagina(1); }}
+            />
           </div>
         </div>
 

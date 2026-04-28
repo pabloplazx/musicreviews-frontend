@@ -4,7 +4,8 @@ const API = "http://localhost:8080/api";
 // Devuelve un Page<Album> de Spring Data: { content: Album[], page: {size, number, totalElements, totalPages} }.
 // El parámetro `q` es la búsqueda unificada (título O nombre de artista). El parámetro
 // `titulo` queda como búsqueda solo por título por compatibilidad con código previo.
-export async function getAlbumes({ page = 0, size = 12, q, titulo, genero, artistaId } = {}) {
+// `sort` acepta: "az" (default), "za", "recientes", "antiguos".
+export async function getAlbumes({ page = 0, size = 12, q, titulo, genero, artistaId, sort } = {}) {
   const params = new URLSearchParams();
   params.set("page", page);
   params.set("size", size);
@@ -12,6 +13,7 @@ export async function getAlbumes({ page = 0, size = 12, q, titulo, genero, artis
   if (titulo) params.set("titulo", titulo);
   if (genero) params.set("genero", genero);
   if (artistaId) params.set("artistaId", artistaId);
+  if (sort) params.set("sort", sort);
 
   const res = await fetch(`${API}/albumes?${params}`);
   if (!res.ok) throw new Error(`Error al cargar álbumes (HTTP ${res.status})`);
