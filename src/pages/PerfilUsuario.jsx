@@ -1,36 +1,75 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import Estrellas from "../components/ui/Estrellas";
 import PortadaPlaceholder from "../components/ui/PortadaPlaceholder";
-
-// Mock — vendrá del backend via useParams (username) + token del usuario logueado
-const USUARIO = {
-  username: "pablo_music",
-  miembroDesde: "enero 2025",
-  totalResenas: 47,
-  totalFavoritos: 23,
-};
-
-const RESENAS = [
-  { id: 1, albumId: 1, album: "Blonde", artista: "Frank Ocean", rating: 5, texto: '"Experimental y hermoso. Frank Ocean en su mejor momento creativo."', fecha: "12 abr 2026" },
-  { id: 2, albumId: 2, album: "El Mal Querer", artista: "ROSALÍA", rating: 5, texto: '"Una revolución del flamenco contemporáneo. Precioso de principio a fin."', fecha: "3 mar 2026" },
-  { id: 3, albumId: 3, album: "Random Access Memories", artista: "Daft Punk", rating: 4.5, texto: '"Producción impecable. Un viaje nostálgico con electrónica moderna."', fecha: "18 ene 2026" },
-  { id: 4, albumId: 4, album: "4:44", artista: "JAY-Z", rating: 5, texto: '"Jay-Z más maduro y honesto que nunca. Líricamente su mejor trabajo."', fecha: "5 dic 2025" },
-];
-
-const FAVORITOS = [
-  { id: 1, albumId: 1, album: "Blonde", artista: "Frank Ocean", rating: 5 },
-  { id: 2, albumId: 2, album: "DAMN.", artista: "Kendrick Lamar", rating: 4.8 },
-  { id: 3, albumId: 3, album: "Kid A", artista: "Radiohead", rating: 4.9 },
-  { id: 4, albumId: 4, album: "El Mal Querer", artista: "ROSALÍA", rating: 5 },
-  { id: 5, albumId: 5, album: "Igor", artista: "Tyler, the Creator", rating: 4.4 },
-  { id: 6, albumId: 6, album: "Currents", artista: "Tame Impala", rating: 4.5 },
-];
+import { useAuth } from "../context/AuthContext";
+import { getUsuarioPorUsername } from "../services/usuarios";
+import { getResenasPorUsuario } from "../services/resenas";
+import { getFavoritosUsuario } from "../services/favoritos";
 
 const TABS = ["Reseñas", "Favoritos"];
 
+function formatearFecha(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function formatearMes(iso) {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("es-ES", { month: "long", year: "numeric" });
+}
+
 export default function PerfilUsuario() {
+  const { username } = useParams();
+  const { usuario: sesion, token } = useAuth();
+
+  const [perfil, setPerfil] = useState(null);
+  const [resenas, setResenas] = useState(null);
+  const [favoritos, setFavoritos] = useState(null);
   const [tabActiva, setTabActiva] = useState("Reseñas");
+  const [error, setError] = useState(null);
+
+  // Cargar datos del usuario y sus reseñas (públicos). Reset cuando cambia username.
+  useEffect(() => {
+    setPerfil(null);
+    setResenas(null);
+    setFavoritos(null);
+    getUsuarioPorUsername(username)
+      .then((u) => {
+        setPerfil(u);
+        return getResenasPorUsuario(u.id);
+      })
+      .then(setResenas)
+      .catch((err) => setError(err.message));
+  }, [username]);
+
+  // Cargar favoritos solo si quien visita está logueado (el endpoint requiere auth).
+  // Si falla por permisos o lo que sea, dejamos favoritos a null y la tab muestra mensaje.
+  useEffect(() => {
+    if (!perfil || !token) return;
+    getFavoritosUsuario(perfil.id, token)
+      .then(setFavoritos)
+      .catch(() => {});
+  }, [perfil, token]);
+
+  if (error) {
+    return (
+      <main className="bg-background min-h-screen py-20 text-center">
+        <p className="text-error font-body">No se pudo cargar el perfil: {error}</p>
+        <Link to="/" className="text-primary hover:underline">← Volver al inicio</Link>
+      </main>
+    );
+  }
+
+  if (!perfil) {
+    return (
+      <main className="bg-background min-h-screen py-20 text-center">
+        <p className="text-muted font-body">Cargando perfil…</p>
+      </main>
+    );
+  }
+
+  const esMiPerfil = sesion?.id === perfil.id;
 
   return (
     <main className="bg-background min-h-screen py-10">
@@ -40,35 +79,49 @@ export default function PerfilUsuario() {
         <div className="flex items-start gap-6 mb-8 relative">
 
           {/* Avatar */}
-          <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center shrink-0">
-            <span className="text-background font-heading font-bold text-4xl uppercase">
-              {USUARIO.username[0]}
-            </span>
-          </div>
+          {perfil.fotoPerfil
+            ? <img src={perfil.fotoPerfil} alt={perfil.username} className="w-24 h-24 rounded-full object-cover shrink-0" />
+            : <div className="w-24 h-24 rounded-full bg-primary flex items-center justify-center shrink-0">
+                <span className="text-background font-heading font-bold text-4xl uppercase">
+                  {perfil.username[0]}
+                </span>
+              </div>
+          }
 
           {/* Info */}
           <div className="flex flex-col gap-2 pt-1">
-            <h1 className="text-text font-heading font-bold text-3xl">{USUARIO.username}</h1>
-            <p className="text-muted font-body text-sm">Miembro desde {USUARIO.miembroDesde}</p>
+            <h1 className="text-text font-heading font-bold text-3xl">{perfil.username}</h1>
+            <p className="text-muted font-body text-sm">
+              {perfil.fechaRegistro && `Miembro desde ${formatearMes(perfil.fechaRegistro)}`}
+            </p>
+            {perfil.bio && (
+              <p className="text-text font-body text-sm max-w-lg whitespace-pre-line mt-1">{perfil.bio}</p>
+            )}
             <div className="flex gap-6 mt-1">
               <div>
-                <span className="text-primary font-heading font-bold text-2xl">{USUARIO.totalResenas}</span>
+                <span className="text-primary font-heading font-bold text-2xl">
+                  {resenas?.length ?? "—"}
+                </span>
                 <p className="text-muted font-body text-xs">Reseñas</p>
               </div>
               <div>
-                <span className="text-primary font-heading font-bold text-2xl">{USUARIO.totalFavoritos}</span>
+                <span className="text-primary font-heading font-bold text-2xl">
+                  {favoritos?.length ?? (token ? "—" : "?")}
+                </span>
                 <p className="text-muted font-body text-xs">Favoritos</p>
               </div>
             </div>
           </div>
 
-          {/* Botón editar perfil */}
-          <Link
-            to="/editar-perfil"
-            className="absolute top-0 right-0 flex items-center gap-2 border border-border text-text font-body text-sm px-4 py-2 rounded-input hover:border-primary hover:text-primary transition-colors"
-          >
-            ✏ Editar perfil
-          </Link>
+          {/* Editar perfil — solo si es mi perfil */}
+          {esMiPerfil && (
+            <Link
+              to="/editar-perfil"
+              className="absolute top-0 right-0 flex items-center gap-2 border border-border text-text font-body text-sm px-4 py-2 rounded-input hover:border-primary hover:text-primary transition-colors"
+            >
+              ✏ Editar perfil
+            </Link>
+          )}
 
         </div>
 
@@ -92,51 +145,83 @@ export default function PerfilUsuario() {
           ))}
         </div>
 
-        {/* Contenido tab Reseñas */}
+        {/* Tab Reseñas */}
         {tabActiva === "Reseñas" && (
-          <div className="flex flex-col gap-4">
-            {RESENAS.map((r) => (
-              <Link
-                key={r.id}
-                to={`/album/${r.albumId}`}
-                className="bg-card border border-border rounded-xl p-5 flex gap-5 hover:border-primary transition-colors"
-              >
-                <PortadaPlaceholder className="w-24 h-24 rounded-lg shrink-0" iconSize="text-2xl" />
-                <div className="flex flex-col gap-1 flex-1 min-w-0">
-                  <p className="text-text font-heading font-bold text-base">{r.album}</p>
-                  <p className="text-muted font-body text-sm">{r.artista}</p>
-                  <Estrellas cantidad={r.rating} />
-                  <p className="text-muted font-body text-sm italic mt-1">{r.texto}</p>
-                </div>
-                <span className="text-muted font-body text-xs shrink-0 pt-1">{r.fecha}</span>
-              </Link>
-            ))}
-          </div>
+          <>
+            {!resenas && <p className="text-muted font-body py-4">Cargando reseñas…</p>}
+            {resenas && resenas.length === 0 && (
+              <p className="text-muted font-body py-12 text-center">
+                {esMiPerfil ? "Aún no has reseñado nada." : `${perfil.username} aún no ha reseñado nada.`}
+              </p>
+            )}
+            {resenas && resenas.length > 0 && (
+              <div className="flex flex-col gap-4">
+                {resenas.map((r) => (
+                  <Link
+                    key={r.id}
+                    to={`/album/${r.album.id}`}
+                    className="bg-card border border-border rounded-xl p-5 flex gap-5 hover:border-primary transition-colors"
+                  >
+                    {r.album.portada
+                      ? <img src={r.album.portada} alt={r.album.titulo} className="w-24 h-24 rounded-lg object-cover shrink-0" />
+                      : <PortadaPlaceholder className="w-24 h-24 rounded-lg shrink-0" iconSize="text-2xl" />
+                    }
+                    <div className="flex flex-col gap-1 flex-1 min-w-0">
+                      <p className="text-text font-heading font-bold text-base">{r.album.titulo}</p>
+                      <p className="text-muted font-body text-sm">{r.album.artista?.nombre}</p>
+                      <Estrellas cantidad={r.puntuacion} />
+                      {r.comentario && (
+                        <p className="text-muted font-body text-sm italic mt-1 line-clamp-2">"{r.comentario}"</p>
+                      )}
+                    </div>
+                    <span className="text-muted font-body text-xs shrink-0 pt-1">{formatearFecha(r.fechaCreacion)}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </>
         )}
 
-        {/* Contenido tab Favoritos */}
+        {/* Tab Favoritos */}
         {tabActiva === "Favoritos" && (
-          <div className="grid grid-cols-6 gap-4">
-            {FAVORITOS.map((f) => (
-              <Link
-                key={f.id}
-                to={`/album/${f.albumId}`}
-                className="bg-card border border-border rounded-xl overflow-hidden flex flex-col hover:border-primary transition-colors"
-              >
-                <div className="relative">
-                  <PortadaPlaceholder className="w-full aspect-square" iconSize="text-2xl" />
-                  <span className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white text-base">
-                    ♥
-                  </span>
-                </div>
-                <div className="p-3 flex flex-col gap-1">
-                  <p className="text-text font-heading font-bold text-xs truncate">{f.album}</p>
-                  <p className="text-muted font-body text-xs truncate">{f.artista}</p>
-                  <p className="text-primary font-body text-xs">★ {f.rating.toFixed(1)}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <>
+            {!token && (
+              <p className="text-muted font-body py-12 text-center">
+                <Link to="/login" className="text-primary hover:underline">Inicia sesión</Link> para ver los favoritos.
+              </p>
+            )}
+            {token && !favoritos && <p className="text-muted font-body py-4">Cargando favoritos…</p>}
+            {token && favoritos && favoritos.length === 0 && (
+              <p className="text-muted font-body py-12 text-center">
+                {esMiPerfil ? "No tienes álbumes en favoritos todavía." : `${perfil.username} no tiene favoritos.`}
+              </p>
+            )}
+            {token && favoritos && favoritos.length > 0 && (
+              <div className="grid grid-cols-6 gap-4">
+                {favoritos.map((f) => (
+                  <Link
+                    key={f.id}
+                    to={`/album/${f.album.id}`}
+                    className="bg-card border border-border rounded-xl overflow-hidden flex flex-col hover:border-primary transition-colors"
+                  >
+                    <div className="relative">
+                      {f.album.portada
+                        ? <img src={f.album.portada} alt={f.album.titulo} className="w-full aspect-square object-cover" />
+                        : <PortadaPlaceholder className="w-full aspect-square" iconSize="text-2xl" />
+                      }
+                      <span className="absolute top-2 right-2 w-7 h-7 rounded-lg bg-primary flex items-center justify-center text-white text-base">
+                        ♥
+                      </span>
+                    </div>
+                    <div className="p-3 flex flex-col gap-1">
+                      <p className="text-text font-heading font-bold text-xs truncate">{f.album.titulo}</p>
+                      <p className="text-muted font-body text-xs truncate">{f.album.artista?.nombre}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </>
         )}
 
       </div>

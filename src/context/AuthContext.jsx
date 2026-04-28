@@ -38,8 +38,15 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("usuario");
   }
 
+  // Actualiza los datos locales del usuario en estado y localStorage tras una
+  // edición de perfil. No toca el token (la sesión sigue activa).
+  function actualizarUsuarioLocal(datosUsuario) {
+    setUsuario(datosUsuario);
+    localStorage.setItem("usuario", JSON.stringify(datosUsuario));
+  }
+
   return (
-    <AuthContext.Provider value={{ usuario, token, login, register, logout }}>
+    <AuthContext.Provider value={{ usuario, token, login, register, logout, actualizarUsuarioLocal }}>
       {children}
     </AuthContext.Provider>
   );
