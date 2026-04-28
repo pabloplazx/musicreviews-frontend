@@ -114,6 +114,7 @@ export default function Catalogo() {
             {albumsPagina.map((a) => (
               <CatalogoCard
                 key={a.id}
+                id={a.id}
                 album={a.album}
                 artista={a.artista}
                 rating={a.rating}

@@ -1,39 +1,3 @@
-// max-w-300 ancho máximo que puede tener
-// mx-auto centra el contenedor
-// px-12 padding
-// flex poner los hijos en fila
-// items-center centrar
-// justify-between
-// gap-12
-//
-// DISEÑOS H1
-/*
-  - text-text → color del texto (el blanco/crema #ebf0ed de tu design system)
-  - font-heading → fuente Space Grotesk (la que tienes definida en index.css)
-  - font-bold → negrita
-  - text-6xl → tamaño grande (60px)
-  - leading-tight → reduce el espacio entre líneas, para que "Descubre. Escucha. Opina." quede compacto
-  - mb-4 → margen abajo de 16px, para separarlo del subtítulo que vendrá después
-*/
-// SUBTITULO DEL HERO
-/*
-  - text-muted → color gris apagado (el #78908a de tu design system)
-  - font-body → fuente Outfit (la fuente de texto normal)
-  - text-base → tamaño normal (16px)
-  - mb-8 → margen abajo de 32px, para separarlo del botón que viene después
-*/
-// BOTÓN
-/*
-  - inline-flex items-center gap-2 → hace que el texto y la flecha queden en línea y centrados
-  - bg-primary → fondo verde (#48a377)
-  - text-background → texto oscuro (#060907) para contrastar con el verde
-  - font-heading font-medium → Space Grotesk en peso medio
-  - px-6 py-3 → padding horizontal y vertical del botón
-  - rounded-[10px] → bordes redondeados (igual que los botones del Navbar)
-  - hover:bg-secondary → al pasar el ratón, verde más oscuro
-  - transition-colors → el cambio de color es suave
-*/
-
 import { Link } from "react-router-dom";
 import SectionTitle from "../components/ui/SectionTitle";
 import PortadaPlaceholder from "../components/ui/PortadaPlaceholder";
@@ -48,7 +12,7 @@ export default function Inicio() {
         <div className="max-w-300 mx-auto px-12 flex items-center justify-between gap-12">
           {/* Columna izquierda */}
           <div>
-            <h1 className="text-text font-heading font-bold text-6xl leading-tight mb-4">Desubre. <br />Esucha. <br />Opina.</h1>
+            <h1 className="text-text font-heading font-bold text-6xl leading-tight mb-4">Descubre. <br />Escucha. <br />Opina.</h1>
             <p className="text-muted font-body text-base mb-8">
               Reseña álbumes, descubre música nueva <br />
               y comparte tu opinion con la comunidad

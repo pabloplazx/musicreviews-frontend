@@ -75,6 +75,7 @@ export default function Busqueda() {
                 {TENDENCIAS.map((a) => (
                   <CatalogoCard
                     key={a.id}
+                    id={a.id}
                     album={a.album}
                     artista={a.artista}
                     rating={a.rating}

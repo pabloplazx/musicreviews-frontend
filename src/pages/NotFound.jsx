@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function NotFound() {
   return (
     <main className="bg-background min-h-screen flex flex-col items-center justify-center gap-4">
-      <span className="text-primary font-heading font-bold" style={{ fontSize: "10rem", lineHeight: 1 }}>
+      <span className="text-primary font-heading font-bold text-[10rem] leading-none">
         404
       </span>
       <h1 className="text-text font-heading font-bold text-3xl">Página no encontrada</h1>
