@@ -36,7 +36,7 @@ export default function Inicio() {
 
   return (
     <main>
-      <section className="py-20 bg-card">
+      <section className="py-20 bg-surface">
         <div className="max-w-300 mx-auto px-12 flex items-center justify-between gap-12">
           {/* Columna izquierda */}
           <div>
