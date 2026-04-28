@@ -40,8 +40,8 @@ musicreviews-frontend/
 │   │       ├── SearchBar.jsx             # Barra de búsqueda con icono SVG
 │   │       ├── SelectOrden.jsx           # Selector desplegable estilizado
 │   │       └── Paginacion.jsx            # Paginación con flechas y puntos suspensivos
-│   ├── context/             # Contextos de React (autenticación, etc.) — pendiente
-│   ├── hooks/               # Custom hooks reutilizables — pendiente
+│   ├── context/
+│   │   └── AuthContext.jsx  # Estado de sesión (usuario + token) con persistencia en localStorage
 │   ├── pages/               # Una página por ruta de la aplicación
 │   │   ├── Inicio.jsx       # Página principal: Hero, Reseñas, Top Álbumes, CTA
 │   │   ├── Login.jsx        # Formulario de inicio de sesión con estado de error
@@ -58,7 +58,8 @@ musicreviews-frontend/
 │   │   ├── MisFavoritos.jsx # Lista de álbumes favoritos del usuario con estado vacío
 │   │   ├── PanelAdmin.jsx   # Panel de administración: stats, contenido, usuarios, moderación
 │   │   └── NotFound.jsx     # Página 404 para rutas desconocidas
-│   ├── services/            # Llamadas a la API REST del backend — pendiente
+│   ├── services/
+│   │   └── auth.js          # Capa de red — POST /api/auth/login y /register
 │   ├── App.jsx              # Configuración de rutas, layout global y patrón SIN_NAVBAR
 │   ├── index.css            # Design system: tokens de color y tipografía (Tailwind v4)
 │   └── main.jsx             # Punto de entrada de la aplicación
@@ -142,4 +143,13 @@ El prototipo visual está en Figma (archivo `Prototipo`, 15 pantallas diseñadas
 
 ## Estado del proyecto
 
-**Frontend: 100% completado** — 15 pantallas implementadas con datos mock listos para conectar al backend REST ya desarrollado (Spring Boot + MySQL/Aiven).
+**Maquetación:** 15 pantallas terminadas, todas con su ruta en React Router y navegación interna funcional.
+
+**Fase 4 — Integración con el backend (en curso):**
+
+- ✅ **Paso 1 — AuthContext:** estado React de `usuario` y `token`, persistido en localStorage. Hook `useAuth()` accesible desde cualquier componente.
+- ✅ **Paso 2 — Login + Registro:** ambos formularios conectados a `POST /api/auth/login` y `/register` del backend, con manejo de errores y estado de carga.
+- 🔜 Paso 3: Navbar dinámico (mostrar avatar/logout cuando hay sesión).
+- 🔜 Pasos 4–9: rutas protegidas, páginas con datos reales del backend, CRUD de reseñas y favoritos desde la UI.
+
+Documentación completa de la fase 4 (decisiones, bugs encontrados al integrar con el backend, pruebas Postman): [`MusicReviews_TFG/docs/integracion.md`](https://github.com/pabloplazx/MusicReviews_TFG/blob/master/docs/integracion.md) en el repo del TFG.
