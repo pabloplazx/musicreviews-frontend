@@ -18,7 +18,9 @@ export default function CatalogoCard({ id = 1, album, artista, rating, genero, p
       <div className="p-3 flex flex-col gap-1">
         <p className="text-text font-heading font-bold text-sm truncate">{album}</p>
         <p className="text-muted font-body text-xs truncate">{artista}</p>
-        <p className="text-primary font-body text-xs">★ {rating.toFixed(1)}</p>
+        {rating != null && (
+          <p className="text-primary font-body text-xs">★ {rating.toFixed(1)}</p>
+        )}
       </div>
     </Link>
   );

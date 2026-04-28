@@ -1,114 +1,131 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import PortadaPlaceholder from "../components/ui/PortadaPlaceholder";
-import Estrellas from "../components/ui/Estrellas";
 import SectionTitle from "../components/ui/SectionTitle";
+import {
+  getResumen,
+  getTopAlbumes,
+  getTopArtistas,
+  getGeneros,
+  getActividadReciente,
+} from "../services/estadisticas";
 
-const STATS = [
-  { valor: "1.2k", label: "Álbumes" },
-  { valor: "340", label: "Artistas" },
-  { valor: "8.4k", label: "Reseñas" },
-  { valor: "521", label: "Usuarios" },
-];
-
-const TOP_ALBUMS = [
-  { posicion: 1, album: "To Pimp a Butterfly", artista: "Kendrick Lamar", rating: 5.0 },
-  { posicion: 2, album: "DAMN.", artista: "Kendrick Lamar", rating: 4.8 },
-  { posicion: 3, album: "Random Access Memories", artista: "Daft Punk", rating: 4.7 },
-  { posicion: 4, album: "Blonde", artista: "Frank Ocean", rating: 4.6 },
-  { posicion: 5, album: "Currents", artista: "Tame Impala", rating: 4.5 },
-];
-
-const GENEROS = [
-  { nombre: "Hip-Hop", cantidad: 312 },
-  { nombre: "Rock", cantidad: 241 },
-  { nombre: "Electronic", cantidad: 193 },
-  { nombre: "R&B / Soul", cantidad: 148 },
-  { nombre: "Pop", cantidad: 106 },
-];
-
-const TOP_ARTISTAS = [
-  { posicion: 1, nombre: "Kendrick Lamar", genero: "Hip-Hop", rating: 4.7 },
-  { posicion: 2, nombre: "Frank Ocean", genero: "R&B", rating: 4.6 },
-  { posicion: 3, nombre: "Tame Impala", genero: "Psychedelic", rating: 4.4 },
-];
-
-const ACTIVIDAD = [
-  { usuario: "@pablo_m", resena: "GNX", rating: 4.5 },
-  { usuario: "@sara_rv", resena: "Chromakopia", rating: 4.0 },
-];
-
-function RankingRow({ posicion, nombre, subtitulo, rating }) {
+function RankingRow({ posicion, nombre, subtitulo, rating, portada }) {
   return (
     <div className="flex items-center gap-4 bg-card border border-border rounded-xl px-4 py-4">
       <span className="w-6 h-6 rounded-full bg-primary/20 text-primary font-heading font-bold text-xs flex items-center justify-center shrink-0">
         {posicion}
       </span>
-      <PortadaPlaceholder className="w-8 h-8 rounded-lg shrink-0" />
+      {portada
+        ? <img src={portada} alt={nombre} className="w-8 h-8 rounded-lg object-cover shrink-0" />
+        : <PortadaPlaceholder className="w-8 h-8 rounded-lg shrink-0" />
+      }
       <div className="flex-1 min-w-0">
         <p className="text-text font-body text-sm font-medium truncate">{nombre}</p>
-        <p className="text-muted font-body text-xs">{subtitulo}</p>
+        <p className="text-muted font-body text-xs truncate">{subtitulo}</p>
       </div>
       <div className="flex items-center gap-1 shrink-0">
         <span className="text-primary text-xs">★</span>
-        <span className="text-text font-body text-sm">{rating.toFixed(1)}</span>
+        <span className="text-text font-body text-sm">{rating?.toFixed(1) ?? "—"}</span>
       </div>
     </div>
   );
 }
 
 export default function Rankings() {
-  const maxGenero = GENEROS[0].cantidad;
+  const [resumen, setResumen] = useState(null);
+  const [topAlbumes, setTopAlbumes] = useState(null);
+  const [topArtistas, setTopArtistas] = useState(null);
+  const [generos, setGeneros] = useState(null);
+  const [actividad, setActividad] = useState(null);
+  const [error, setError] = useState(null);
+
+  // 5 peticiones en paralelo. Si una falla, las demás aún cargan; el error
+  // global se muestra y las secciones que sí cargaron se renderizan igual.
+  useEffect(() => {
+    Promise.all([
+      getResumen(),
+      getTopAlbumes(),
+      getTopArtistas(),
+      getGeneros(),
+      getActividadReciente(),
+    ])
+      .then(([res, tAl, tAr, gen, act]) => {
+        setResumen(res);
+        setTopAlbumes(tAl.slice(0, 5));
+        setTopArtistas(tAr.slice(0, 3));
+        setGeneros(gen.filter((g) => g.genero).slice(0, 5));
+        setActividad(act.slice(0, 2));
+      })
+      .catch((err) => setError(err.message));
+  }, []);
+
+  // Para las barras de progreso por género
+  const maxGenero = generos && generos.length > 0 ? generos[0].total : 1;
 
   return (
     <main className="bg-background min-h-screen py-10">
       <div className="max-w-300 mx-auto px-12">
 
-        {/* Cabecera */}
         <h1 className="text-text font-heading font-bold text-4xl mb-8">Rankings</h1>
+
+        {error && (
+          <p className="text-error font-body py-8">No se pudieron cargar los rankings: {error}</p>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-4 gap-4 mb-10">
-          {STATS.map((s) => (
+          {[
+            { label: "Álbumes", valor: resumen?.totalAlbumes },
+            { label: "Artistas", valor: resumen?.totalArtistas },
+            { label: "Reseñas", valor: resumen?.totalResenas },
+            { label: "Usuarios", valor: resumen?.totalUsuarios },
+          ].map((s) => (
             <div key={s.label} className="bg-card border border-border rounded-xl py-5 flex flex-col items-center gap-1">
-              <span className="text-primary font-heading font-bold text-3xl">{s.valor}</span>
+              <span className="text-primary font-heading font-bold text-3xl">
+                {s.valor ?? "—"}
+              </span>
               <span className="text-muted font-body text-sm">{s.label}</span>
             </div>
           ))}
         </div>
 
-        {/* Dos columnas: Top Álbumes + Por género */}
+        {/* Top Álbumes + Por género */}
         <div className="grid grid-cols-2 gap-10 mb-10">
 
-          {/* Top Álbumes */}
           <div>
             <SectionTitle>Top Álbumes</SectionTitle>
             <div className="flex flex-col gap-3">
-              {TOP_ALBUMS.map((a) => (
-                <RankingRow
-                  key={a.posicion}
-                  posicion={a.posicion}
-                  nombre={a.album}
-                  subtitulo={a.artista}
-                  rating={a.rating}
-                />
+              {!topAlbumes && <p className="text-muted font-body">Cargando…</p>}
+              {topAlbumes && topAlbumes.length === 0 && <p className="text-muted font-body">Sin reseñas suficientes.</p>}
+              {topAlbumes && topAlbumes.map((item, i) => (
+                <Link key={item.album.id} to={`/album/${item.album.id}`} className="hover:opacity-80 transition-opacity">
+                  <RankingRow
+                    posicion={i + 1}
+                    nombre={item.album.titulo}
+                    subtitulo={item.album.artista?.nombre}
+                    rating={item.valor}
+                    portada={item.album.portada}
+                  />
+                </Link>
               ))}
             </div>
           </div>
 
-          {/* Por género */}
           <div>
             <SectionTitle>Por género</SectionTitle>
             <div className="flex flex-col gap-5">
-              {GENEROS.map((g) => (
-                <div key={g.nombre}>
+              {!generos && <p className="text-muted font-body">Cargando…</p>}
+              {generos && generos.map((g) => (
+                <div key={g.genero}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-text font-body text-sm">{g.nombre}</span>
-                    <span className="text-muted font-body text-xs">{g.cantidad}</span>
+                    <span className="text-text font-body text-sm capitalize">{g.genero}</span>
+                    <span className="text-muted font-body text-xs">{g.total}</span>
                   </div>
                   <div className="w-full h-2 bg-border rounded-full overflow-hidden">
                     <div
                       className="h-full bg-primary rounded-full"
-                      style={{ width: `${(g.cantidad / maxGenero) * 100}%` }}
+                      style={{ width: `${(g.total / maxGenero) * 100}%` }}
                     />
                   </div>
                 </div>
@@ -118,39 +135,46 @@ export default function Rankings() {
 
         </div>
 
-        {/* Dos columnas: Top Artistas + Actividad reciente */}
+        {/* Top Artistas + Actividad reciente */}
         <div className="grid grid-cols-2 gap-10">
 
-          {/* Top Artistas */}
           <div>
             <SectionTitle>Top Artistas</SectionTitle>
             <div className="flex flex-col gap-3">
-              {TOP_ARTISTAS.map((a) => (
-                <Link key={a.posicion} to={`/artista/${a.posicion}`} className="hover:opacity-80 transition-opacity">
+              {!topArtistas && <p className="text-muted font-body">Cargando…</p>}
+              {topArtistas && topArtistas.length === 0 && <p className="text-muted font-body">Sin reseñas suficientes.</p>}
+              {topArtistas && topArtistas.map((item, i) => (
+                <Link key={item.artista.id} to={`/artista/${item.artista.id}`} className="hover:opacity-80 transition-opacity">
                   <RankingRow
-                    posicion={a.posicion}
-                    nombre={a.nombre}
-                    subtitulo={a.genero}
-                    rating={a.rating}
+                    posicion={i + 1}
+                    nombre={item.artista.nombre}
+                    subtitulo={item.artista.genero}
+                    rating={item.puntuacionMedia}
+                    portada={item.artista.foto}
                   />
                 </Link>
               ))}
             </div>
           </div>
 
-          {/* Actividad reciente */}
           <div>
             <SectionTitle>Actividad reciente</SectionTitle>
             <div className="flex flex-col gap-3">
-              {ACTIVIDAD.map((a) => (
-                <Link key={a.usuario} to={`/perfil/${a.usuario.replace("@", "")}`} className="flex items-center justify-between bg-card border border-border rounded-xl px-4 py-4 hover:border-primary transition-colors">
-                  <div>
-                    <p className="text-text font-body text-sm font-medium">{a.usuario}</p>
-                    <p className="text-muted font-body text-xs">reseñó "{a.resena}"</p>
+              {!actividad && <p className="text-muted font-body">Cargando…</p>}
+              {actividad && actividad.length === 0 && <p className="text-muted font-body">Aún no hay actividad.</p>}
+              {actividad && actividad.map((r) => (
+                <Link
+                  key={r.id}
+                  to={`/perfil/${r.usuario.username}`}
+                  className="flex items-center justify-between bg-card border border-border rounded-xl px-4 py-4 hover:border-primary transition-colors"
+                >
+                  <div className="min-w-0">
+                    <p className="text-text font-body text-sm font-medium">@{r.usuario.username}</p>
+                    <p className="text-muted font-body text-xs truncate">reseñó "{r.album.titulo}"</p>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 shrink-0">
                     <span className="text-primary text-xs">★</span>
-                    <span className="text-text font-body text-sm">{a.rating.toFixed(1)}</span>
+                    <span className="text-text font-body text-sm">{r.puntuacion.toFixed(1)}</span>
                   </div>
                 </Link>
               ))}

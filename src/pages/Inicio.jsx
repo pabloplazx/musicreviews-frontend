@@ -1,11 +1,35 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SectionTitle from "../components/ui/SectionTitle";
 import PortadaPlaceholder from "../components/ui/PortadaPlaceholder";
 import Estrellas from "../components/ui/Estrellas";
 import ResenaCard from "../components/ui/ResenaCard";
 import AlbumCard from "../components/ui/AlbumCard";
+import { getActividadReciente, getTopAlbumes } from "../services/estadisticas";
 
 export default function Inicio() {
+  const [resenas, setResenas] = useState(null);
+  const [topAlbumes, setTopAlbumes] = useState(null);
+  const [error, setError] = useState(null);
+
+  // Promise.all dispara las dos peticiones en paralelo. Si una falla, ambos
+  // estados se quedan a null y se muestra el mensaje de error.
+  useEffect(() => {
+    Promise.all([getActividadReciente(), getTopAlbumes()])
+      .then(([r, t]) => {
+        setResenas(r);
+        setTopAlbumes(t);
+      })
+      .catch((err) => setError(err.message));
+  }, []);
+
+  // Reseña destacada del Hero: la mejor valorada entre las recientes.
+  // Permite que el Hero "venda" la app con contenido real positivo en lugar
+  // de un placeholder estático ("DAMN.") que no coincidía con la portada.
+  const resenaDestacada = resenas && resenas.length > 0
+    ? [...resenas].sort((a, b) => b.puntuacion - a.puntuacion)[0]
+    : null;
+
   return (
     <main>
       <section className="py-20 bg-card">
@@ -21,18 +45,43 @@ export default function Inicio() {
               Explorar álbumes →
             </Link>
           </div>
-          {/* Columna derecha */}
-          <div className="bg-input border border-primary/40 rounded-xl p-4 w-55 shrink-0">
-            {/* Portada placeholder */}
-            <PortadaPlaceholder className="w-full h-47.5 mb-3" />
-            {/* Info del album */}
-            <p className="text-text font-heading font-medium text-sm">DAMN.</p>
-            <p className="text-muted font-body text-xs mb-2">Kendrick Lamar · 2017</p>
-            <Estrellas cantidad={5} />
-            <p className="text-muted font-body text-xs mt-2 italic">
-              "Líricamente impecable. Un álbum que define una generación."
-            </p>
-          </div>
+          {/* Columna derecha — reseña destacada (la mejor valorada entre las recientes).
+              Si hay reseña, toda la card es Link al detalle del álbum.
+              Si todavía no ha cargado, un div estático con el placeholder. */}
+          {resenaDestacada ? (
+            <Link
+              to={`/album/${resenaDestacada.album.id}`}
+              className="bg-input border border-primary/40 rounded-xl p-4 w-55 shrink-0 hover:border-primary transition-colors"
+            >
+              {resenaDestacada.album.portada
+                ? <img
+                    src={resenaDestacada.album.portada}
+                    alt={resenaDestacada.album.titulo}
+                    className="w-full aspect-square object-cover rounded-lg mb-3"
+                  />
+                : <PortadaPlaceholder className="w-full aspect-square mb-3" />
+              }
+              <p className="text-text font-heading font-medium text-sm truncate">
+                {resenaDestacada.album.titulo}
+              </p>
+              <p className="text-muted font-body text-xs mb-2 truncate">
+                {resenaDestacada.album.artista?.nombre}
+                {resenaDestacada.album.fechaLanzamiento &&
+                  ` · ${new Date(resenaDestacada.album.fechaLanzamiento).getFullYear()}`}
+              </p>
+              <Estrellas cantidad={resenaDestacada.puntuacion} />
+              {resenaDestacada.comentario && (
+                <p className="text-muted font-body text-xs mt-2 italic line-clamp-3">
+                  "{resenaDestacada.comentario}"
+                </p>
+              )}
+            </Link>
+          ) : (
+            <div className="bg-input border border-primary/40 rounded-xl p-4 w-55 shrink-0">
+              <PortadaPlaceholder className="w-full aspect-square mb-3" />
+              <p className="text-text font-heading font-medium text-sm">Cargando…</p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -40,12 +89,24 @@ export default function Inicio() {
       <section className="py-12 bg-background">
         <div className="max-w-300 mx-auto px-12">
           <SectionTitle>Reseñas recientes</SectionTitle>
-          <div className="grid grid-cols-4 gap-6">
-            <ResenaCard album="Blonde" artista="Frank Ocean" puntuacion={5} texto="Experimental y hermoso. Frank Ocean en su mejor momento creativo." />
-            <ResenaCard album="El Mal Querer" artista="ROSALÍA" puntuacion={5} texto="Una revolución del flamenco. Precioso de principio a fin." />
-            <ResenaCard album="Random Access Memories" artista="Daft Punk" puntuacion={4.5} texto="Un viaje nostálgico a la disco de los 70. Producción increíble." />
-            <ResenaCard album="4:44" artista="JAY-Z" puntuacion={5} texto="JAY-Z más maduro y honesto que nunca. Un testamento artístico." />
-          </div>
+          {error && <p className="text-error font-body">No se pudieron cargar las reseñas: {error}</p>}
+          {!error && !resenas && <p className="text-muted font-body">Cargando reseñas…</p>}
+          {resenas && resenas.length === 0 && <p className="text-muted font-body">Aún no hay reseñas.</p>}
+          {resenas && resenas.length > 0 && (
+            <div className="grid grid-cols-4 gap-6">
+              {resenas.slice(0, 4).map((r) => (
+                <ResenaCard
+                  key={r.id}
+                  id={r.album.id}
+                  album={r.album.titulo}
+                  artista={r.album.artista.nombre}
+                  puntuacion={r.puntuacion}
+                  texto={r.comentario}
+                  portada={r.album.portada}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -53,13 +114,23 @@ export default function Inicio() {
       <section className="py-12 bg-card">
         <div className="max-w-300 mx-auto px-12">
           <SectionTitle>Top Álbumes</SectionTitle>
-          <div className="grid grid-cols-5 gap-6">
-            <AlbumCard posicion={1} album="Kid A Mnesia" artista="Radiohead" rating={5.0} />
-            <AlbumCard posicion={2} album="Meat is Murder" artista="The Smiths" rating={5.0} />
-            <AlbumCard posicion={3} album="OK Computer" artista="Radiohead" rating={5.0} />
-            <AlbumCard posicion={4} album="Nevermind" artista="Nirvana" rating={4.9} />
-            <AlbumCard posicion={5} album="Definitely Maybe" artista="Oasis" rating={4.8} />
-          </div>
+          {!error && !topAlbumes && <p className="text-muted font-body">Cargando top álbumes…</p>}
+          {topAlbumes && topAlbumes.length === 0 && <p className="text-muted font-body">No hay álbumes con reseñas suficientes.</p>}
+          {topAlbumes && topAlbumes.length > 0 && (
+            <div className="grid grid-cols-5 gap-6">
+              {topAlbumes.slice(0, 5).map((item, i) => (
+                <AlbumCard
+                  key={item.album.id}
+                  id={item.album.id}
+                  posicion={i + 1}
+                  album={item.album.titulo}
+                  artista={item.album.artista.nombre}
+                  rating={item.valor}
+                  portada={item.album.portada}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
