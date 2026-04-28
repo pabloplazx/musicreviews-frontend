@@ -47,7 +47,8 @@ export default function Catalogo() {
       getAlbumes({
         page: pagina - 1,
         size: POR_PAGINA,
-        titulo: busqueda || undefined,
+        // q busca tanto en título de álbum como en nombre de artista — más útil para el usuario.
+        q: busqueda || undefined,
         genero: generoActivo !== "Todos" ? generoActivo : undefined,
       })
         .then((res) => {

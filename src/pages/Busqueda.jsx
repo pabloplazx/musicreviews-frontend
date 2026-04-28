@@ -42,7 +42,7 @@ export default function Busqueda() {
     }
     setBuscando(true);
     const timeoutId = setTimeout(() => {
-      getAlbumes({ titulo: busqueda, page: 0, size: 12 })
+      getAlbumes({ q: busqueda, page: 0, size: 12 })
         .then((res) => {
           setResultados(res.content);
           setError(null);

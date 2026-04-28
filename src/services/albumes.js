@@ -2,10 +2,13 @@ const API = "http://localhost:8080/api";
 
 // GET /api/albumes con filtros y paginación.
 // Devuelve un Page<Album> de Spring Data: { content: Album[], page: {size, number, totalElements, totalPages} }.
-export async function getAlbumes({ page = 0, size = 12, titulo, genero, artistaId } = {}) {
+// El parámetro `q` es la búsqueda unificada (título O nombre de artista). El parámetro
+// `titulo` queda como búsqueda solo por título por compatibilidad con código previo.
+export async function getAlbumes({ page = 0, size = 12, q, titulo, genero, artistaId } = {}) {
   const params = new URLSearchParams();
   params.set("page", page);
   params.set("size", size);
+  if (q) params.set("q", q);
   if (titulo) params.set("titulo", titulo);
   if (genero) params.set("genero", genero);
   if (artistaId) params.set("artistaId", artistaId);
