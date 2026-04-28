@@ -23,12 +23,16 @@ export default function Inicio() {
       .catch((err) => setError(err.message));
   }, []);
 
-  // Reseña destacada del Hero: la mejor valorada entre las recientes.
-  // Permite que el Hero "venda" la app con contenido real positivo en lugar
-  // de un placeholder estático ("DAMN.") que no coincidía con la portada.
-  const resenaDestacada = resenas && resenas.length > 0
-    ? [...resenas].sort((a, b) => b.puntuacion - a.puntuacion)[0]
-    : null;
+  // Reseña destacada del Hero: la mejor valorada entre las recientes que
+  // tengan comentario. Sin comentario el Hero queda visualmente pobre (solo
+  // estrellas), así que filtramos primero. Si ninguna reciente tiene texto,
+  // caemos a la mejor sin filtrar para no dejar la card vacía.
+  const resenaDestacada = (() => {
+    if (!resenas || resenas.length === 0) return null;
+    const conTexto = resenas.filter((r) => r.comentario && r.comentario.trim());
+    const candidatas = conTexto.length > 0 ? conTexto : resenas;
+    return [...candidatas].sort((a, b) => b.puntuacion - a.puntuacion)[0];
+  })();
 
   return (
     <main>
@@ -51,35 +55,35 @@ export default function Inicio() {
           {resenaDestacada ? (
             <Link
               to={`/album/${resenaDestacada.album.id}`}
-              className="bg-input border border-primary/40 rounded-xl p-4 w-55 shrink-0 hover:border-primary transition-colors"
+              className="bg-input border border-primary/40 rounded-xl p-5 w-80 shrink-0 hover:border-primary transition-colors"
             >
               {resenaDestacada.album.portada
                 ? <img
                     src={resenaDestacada.album.portada}
                     alt={resenaDestacada.album.titulo}
-                    className="w-full aspect-square object-cover rounded-lg mb-3"
+                    className="w-full aspect-square object-cover rounded-lg mb-4"
                   />
-                : <PortadaPlaceholder className="w-full aspect-square mb-3" />
+                : <PortadaPlaceholder className="w-full aspect-square mb-4" iconSize="text-6xl" />
               }
-              <p className="text-text font-heading font-medium text-sm truncate">
+              <p className="text-text font-heading font-bold text-xl truncate">
                 {resenaDestacada.album.titulo}
               </p>
-              <p className="text-muted font-body text-xs mb-2 truncate">
+              <p className="text-muted font-body text-sm mb-3 truncate">
                 {resenaDestacada.album.artista?.nombre}
                 {resenaDestacada.album.fechaLanzamiento &&
                   ` · ${new Date(resenaDestacada.album.fechaLanzamiento).getFullYear()}`}
               </p>
               <Estrellas cantidad={resenaDestacada.puntuacion} />
               {resenaDestacada.comentario && (
-                <p className="text-muted font-body text-xs mt-2 italic line-clamp-3">
+                <p className="text-muted font-body text-sm mt-3 italic line-clamp-3">
                   "{resenaDestacada.comentario}"
                 </p>
               )}
             </Link>
           ) : (
-            <div className="bg-input border border-primary/40 rounded-xl p-4 w-55 shrink-0">
-              <PortadaPlaceholder className="w-full aspect-square mb-3" />
-              <p className="text-text font-heading font-medium text-sm">Cargando…</p>
+            <div className="bg-input border border-primary/40 rounded-xl p-5 w-80 shrink-0">
+              <PortadaPlaceholder className="w-full aspect-square mb-4" iconSize="text-6xl" />
+              <p className="text-text font-heading font-medium text-base">Cargando…</p>
             </div>
           )}
         </div>
