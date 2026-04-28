@@ -143,13 +143,23 @@ El prototipo visual está en Figma (archivo `Prototipo`, 15 pantallas diseñadas
 
 ## Estado del proyecto
 
-**Maquetación:** 15 pantallas terminadas, todas con su ruta en React Router y navegación interna funcional.
+**15 pantallas terminadas** + **integración 100% completa** con el backend (Spring Boot + MySQL en Aiven).
 
-**Fase 4 — Integración con el backend (en curso):**
+**Fase 4 — Integración frontend ↔ backend (cerrada):**
 
-- ✅ **Paso 1 — AuthContext:** estado React de `usuario` y `token`, persistido en localStorage. Hook `useAuth()` accesible desde cualquier componente.
-- ✅ **Paso 2 — Login + Registro:** ambos formularios conectados a `POST /api/auth/login` y `/register` del backend, con manejo de errores y estado de carga.
-- 🔜 Paso 3: Navbar dinámico (mostrar avatar/logout cuando hay sesión).
-- 🔜 Pasos 4–9: rutas protegidas, páginas con datos reales del backend, CRUD de reseñas y favoritos desde la UI.
+- ✅ **Paso 1 — AuthContext:** estado React de `usuario` y `token`, persistido en localStorage. Hook `useAuth()`.
+- ✅ **Paso 2 — Login + Registro:** formularios reales contra `POST /api/auth/login` y `/register`.
+- ✅ **Paso 3 — Navbar dinámico:** renderizado condicional según sesión y rol; logout, avatar real con inicial del usuario, link "Admin" solo si `rol === "ADMIN"`.
+- ✅ **Paso 4 — Rutas protegidas:** wrappers `<RutaProtegida>` y `<RutaAdmin>` con redirección a `/login` recordando la URL original.
+- ✅ **Paso 5 — Páginas públicas:** Inicio, Catálogo, Búsqueda, Rankings con datos reales (732 álbumes, 99 artistas, ~38 reseñas, 9 usuarios).
+- ✅ **Paso 6 — Detalle de álbum y artista:** datos reales + toggle de favoritos funcional con auth.
+- ✅ **Paso 7 — Páginas de usuario:** perfil público (reseñas + favoritos), editar perfil con sincronización del contexto, mis favoritos con quitar inline.
+- ✅ **Paso 8 — CRUD de reseñas:** crear, editar, borrar desde la UI con todas las navegaciones cruzadas y detección "ya tengo reseña → editar".
+- ✅ **Paso 9 — Panel admin funcional:** stats reales, gestión de usuarios (activar/desactivar), formulario de nuevo artista, moderación de reseñas. Búsqueda unificada (`?q=`) que matchea título o artista. Orden parametrizable en catálogo (4 opciones).
 
-Documentación completa de la fase 4 (decisiones, bugs encontrados al integrar con el backend, pruebas Postman): [`MusicReviews_TFG/docs/integracion.md`](https://github.com/pabloplazx/MusicReviews_TFG/blob/master/docs/integracion.md) en el repo del TFG.
+**Servicios** (separados por dominio del backend, igual patrón en todos):
+`auth.js`, `albumes.js`, `artistas.js`, `usuarios.js`, `resenas.js`, `favoritos.js`, `estadisticas.js`.
+
+**Limitaciones conocidas y documentadas:** sin verificación de email, sin cambio de contraseña, sin subida real de archivos (URL como workaround), sin orden "Mejor valorados" en catálogo (requiere agregado de reseñas), `DELETE /api/resenas/{id}` no verifica owner en backend (protección solo a nivel de UI). Lista completa con causas y mejoras futuras en [`MusicReviews_TFG/docs/integracion.md § 13`](https://github.com/pabloplazx/MusicReviews_TFG/blob/master/docs/integracion.md).
+
+**Documentación completa** de la fase 4 (todas las decisiones, bugs encontrados al integrar — incluyendo 6 bugs B1-B6 documentados, pruebas Postman, decisiones técnicas): [`integracion.md`](https://github.com/pabloplazx/MusicReviews_TFG/blob/master/docs/integracion.md) en el repo del TFG.
