@@ -1,0 +1,15 @@
+# Normaliza line-endings: LF en repo, lo que toque en cada SO al hacer checkout.
+# Evita el ruido CRLF↔LF tras subidas desde Windows.
+* text=auto eol=lf
+
+# Binarios
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.svg   text eol=lf
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
