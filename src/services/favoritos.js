@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api";
+const API = import.meta.env.VITE_API_URL;
 
 // GET /api/favoritos/existe?usuarioId=&albumId= (requiere token).
 // Devuelve true/false. Si no hay sesión devolvemos false sin llamar al backend.

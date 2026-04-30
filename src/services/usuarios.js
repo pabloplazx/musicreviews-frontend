@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api";
+const API = import.meta.env.VITE_API_URL;
 
 // GET /api/usuarios/username/{username} (público).
 // 404 si no existe; lanza Error con mensaje del backend.

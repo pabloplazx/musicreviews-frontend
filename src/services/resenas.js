@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api";
+const API = import.meta.env.VITE_API_URL;
 
 // GET /api/resenas?albumId=... → todas las reseñas de un álbum (público).
 export async function getResenasPorAlbum(albumId) {

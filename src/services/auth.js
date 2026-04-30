@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api";
+const API = import.meta.env.VITE_API_URL;
 
 // Llama al endpoint de login y devuelve los datos del usuario + token
 export async function login(email, password) {

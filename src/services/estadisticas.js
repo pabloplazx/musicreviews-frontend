@@ -1,4 +1,4 @@
-const API = "http://localhost:8080/api";
+const API = import.meta.env.VITE_API_URL;
 
 async function get(path) {
   const res = await fetch(`${API}/estadisticas${path}`);

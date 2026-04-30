@@ -34,8 +34,3 @@ dist-ssr
 *token*.txt
 *secret*.txt
 *credentials*.json
-
-# Herramientas de desarrollo y asistencia
-CLAUDE.md
-.claude/
-claude.txt

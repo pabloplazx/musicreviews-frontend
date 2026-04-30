@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+
+# Build local
+dist/
+
+# Control de versiones
+.git/
+.gitignore
+
+# IDEs
+.idea/
+.vscode/
+
+# Logs
+npm-debug.log*
+*.log
+
+# Variables de entorno locales
+.env
+.env.local
+.env.*.local
