@@ -36,13 +36,13 @@ export default function Inicio() {
 
   return (
     <main>
-      <section className="py-20 bg-surface">
-        <div className="max-w-300 mx-auto px-12 flex items-center justify-between gap-12">
+      <section className="py-12 sm:py-16 lg:py-20 bg-surface">
+        <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12 flex flex-col lg:flex-row items-center lg:justify-between gap-8 lg:gap-12">
           {/* Columna izquierda */}
-          <div>
-            <h1 className="text-text font-heading font-bold text-6xl leading-tight mb-4">Descubre. <br />Escucha. <br />Opina.</h1>
+          <div className="text-center lg:text-left w-full lg:w-auto">
+            <h1 className="text-text font-heading font-bold text-4xl sm:text-5xl lg:text-6xl leading-tight mb-4">Descubre. <br />Escucha. <br />Opina.</h1>
             <p className="text-muted font-body text-base mb-8">
-              Reseña álbumes, descubre música nueva <br />
+              Reseña álbumes, descubre música nueva <span className="hidden lg:inline"><br /></span>
               y comparte tu opinion con la comunidad
             </p>
             <Link to="/catalogo" className="inline-flex items-center gap-2 bg-primary text-background font-heading font-medium px-6 py-3 rounded-input hover:bg-secondary transition-colors">
@@ -55,7 +55,7 @@ export default function Inicio() {
           {resenaDestacada ? (
             <Link
               to={`/album/${resenaDestacada.album.id}`}
-              className="bg-input border border-primary/40 rounded-xl p-5 w-80 shrink-0 hover:border-primary transition-colors"
+              className="bg-input border border-primary/40 rounded-xl p-5 w-full max-w-sm lg:w-80 lg:shrink-0 hover:border-primary transition-colors"
             >
               {resenaDestacada.album.portada
                 ? <img
@@ -81,7 +81,7 @@ export default function Inicio() {
               )}
             </Link>
           ) : (
-            <div className="bg-input border border-primary/40 rounded-xl p-5 w-80 shrink-0">
+            <div className="bg-input border border-primary/40 rounded-xl p-5 w-full max-w-sm lg:w-80 lg:shrink-0">
               <PortadaPlaceholder className="w-full aspect-square mb-4" iconSize="text-6xl" />
               <p className="text-text font-heading font-medium text-base">Cargando…</p>
             </div>
@@ -91,13 +91,13 @@ export default function Inicio() {
 
       {/* RESEÑAS RECIENTES */}
       <section className="py-12 bg-background">
-        <div className="max-w-300 mx-auto px-12">
+        <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12">
           <SectionTitle>Reseñas recientes</SectionTitle>
           {error && <p className="text-error font-body">No se pudieron cargar las reseñas: {error}</p>}
           {!error && !resenas && <p className="text-muted font-body">Cargando reseñas…</p>}
           {resenas && resenas.length === 0 && <p className="text-muted font-body">Aún no hay reseñas.</p>}
           {resenas && resenas.length > 0 && (
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {resenas.slice(0, 4).map((r) => (
                 <ResenaCard
                   key={r.id}
@@ -116,12 +116,12 @@ export default function Inicio() {
 
       {/* TOP ÁLBUMES */}
       <section className="py-12 bg-card">
-        <div className="max-w-300 mx-auto px-12">
+        <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12">
           <SectionTitle>Top Álbumes</SectionTitle>
           {!error && !topAlbumes && <p className="text-muted font-body">Cargando top álbumes…</p>}
           {topAlbumes && topAlbumes.length === 0 && <p className="text-muted font-body">No hay álbumes con reseñas suficientes.</p>}
           {topAlbumes && topAlbumes.length > 0 && (
-            <div className="grid grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
               {topAlbumes.slice(0, 5).map((item, i) => (
                 <AlbumCard
                   key={item.album.id}
@@ -139,12 +139,12 @@ export default function Inicio() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-surface">
-        <div className="max-w-300 mx-auto px-12">
-          <h2 className="text-text font-heading font-bold text-5xl leading-tight mb-8">
+      <section className="py-12 sm:py-16 lg:py-20 bg-surface">
+        <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12 text-center lg:text-left">
+          <h2 className="text-text font-heading font-bold text-3xl sm:text-4xl lg:text-5xl leading-tight mb-8">
             ¿Listo para compartir<br />tu opinión musical?
           </h2>
-          <div className="flex items-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center sm:gap-6 gap-4">
             <Link to="/registro" className="inline-flex items-center gap-2 bg-primary text-background font-heading font-medium px-6 py-3 rounded-input hover:bg-secondary transition-colors">
               Crear cuenta gratis →
             </Link>

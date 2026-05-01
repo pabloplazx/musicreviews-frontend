@@ -41,21 +41,21 @@ export default function EditarPerfil() {
   return (
     <div className="bg-background min-h-screen flex flex-col">
 
-      <header className="bg-card border-b border-border px-12 py-4 flex items-center justify-between relative">
-        <span className="text-primary font-heading font-bold text-lg">♪ MusicReviews</span>
-        <h1 className="text-text font-heading font-bold text-lg absolute left-1/2 -translate-x-1/2">
+      <header className="bg-card border-b border-border px-4 sm:px-6 lg:px-12 py-4 flex items-center justify-between gap-3 relative">
+        <span className="text-primary font-heading font-bold text-lg shrink-0">♪ <span className="hidden sm:inline">MusicReviews</span></span>
+        <h1 className="text-text font-heading font-bold text-base sm:text-lg lg:absolute lg:left-1/2 lg:-translate-x-1/2">
           Editar perfil
         </h1>
         <button
           onClick={() => navigate(-1)}
-          className="text-muted font-body text-sm hover:text-primary transition-colors"
+          className="text-muted font-body text-sm hover:text-primary transition-colors shrink-0"
         >
           Cancelar
         </button>
       </header>
 
-      <main className="flex-1 py-10">
-        <div className="w-full max-w-xl mx-auto px-6 flex flex-col gap-6">
+      <main className="flex-1 py-8 sm:py-10">
+        <div className="w-full max-w-xl mx-auto px-4 sm:px-6 flex flex-col gap-6">
 
           {/* Avatar (preview) */}
           <div className="flex flex-col items-center gap-2 mb-2">

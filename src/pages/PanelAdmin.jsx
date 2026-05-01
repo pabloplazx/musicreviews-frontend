@@ -110,13 +110,13 @@ export default function PanelAdmin() {
   }
 
   return (
-    <main className="bg-background min-h-screen py-10">
-      <div className="max-w-300 mx-auto px-12">
+    <main className="bg-background min-h-screen py-8 sm:py-10">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12">
 
-        <h1 className="text-text font-heading font-bold text-4xl mb-8">Panel de administración</h1>
+        <h1 className="text-text font-heading font-bold text-3xl sm:text-4xl mb-8">Panel de administración</h1>
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           {[
             { label: "Álbumes", valor: resumen?.totalAlbumes },
             { label: "Artistas", valor: resumen?.totalArtistas },
@@ -141,7 +141,7 @@ export default function PanelAdmin() {
           <p className="text-error font-body mb-4">Aviso: {error}</p>
         )}
 
-        <div className="grid grid-cols-2 gap-10 mb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 mb-10">
 
           {/* Columna izquierda: gestión de usuarios */}
           <section>
@@ -151,7 +151,7 @@ export default function PanelAdmin() {
             {usuarios && usuarios.length > 0 && (
               <div className="flex flex-col gap-2">
                 {usuarios.map((u) => (
-                  <div key={u.id} className="bg-card border border-border rounded-xl px-4 py-3 flex items-center gap-3">
+                  <div key={u.id} className="bg-card border border-border rounded-xl px-4 py-3 flex flex-wrap items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center shrink-0">
                       <span className="text-background font-heading font-bold uppercase">{u.username[0]}</span>
                     </div>
@@ -161,25 +161,27 @@ export default function PanelAdmin() {
                       </Link>
                       <p className="text-muted font-body text-xs truncate">{u.email}</p>
                     </div>
-                    <span className={`font-body text-xs px-2 py-0.5 rounded-full shrink-0 ${
-                      u.activo ? "bg-primary/20 text-primary" : "bg-error/20 text-error"
-                    }`}>
-                      {u.activo ? "Activo" : "Inactivo"}
-                    </span>
-                    <span className="font-body text-xs px-2 py-0.5 rounded-full bg-card border border-border text-muted shrink-0">
-                      {u.rol}
-                    </span>
-                    <button
-                      onClick={() => handleToggleActivo(u)}
-                      disabled={cambiandoActivoId === u.id}
-                      className={`font-body text-xs px-3 py-1.5 rounded-input border transition-colors disabled:opacity-50 shrink-0 ${
-                        u.activo
-                          ? "border-error text-error hover:bg-error/10"
-                          : "border-primary text-primary hover:bg-primary/10"
-                      }`}
-                    >
-                      {cambiandoActivoId === u.id ? "…" : u.activo ? "Desactivar" : "Activar"}
-                    </button>
+                    <div className="flex items-center gap-2 flex-wrap shrink-0">
+                      <span className={`font-body text-xs px-2 py-0.5 rounded-full ${
+                        u.activo ? "bg-primary/20 text-primary" : "bg-error/20 text-error"
+                      }`}>
+                        {u.activo ? "Activo" : "Inactivo"}
+                      </span>
+                      <span className="font-body text-xs px-2 py-0.5 rounded-full bg-card border border-border text-muted">
+                        {u.rol}
+                      </span>
+                      <button
+                        onClick={() => handleToggleActivo(u)}
+                        disabled={cambiandoActivoId === u.id}
+                        className={`font-body text-xs px-3 py-1.5 rounded-input border transition-colors disabled:opacity-50 ${
+                          u.activo
+                            ? "border-error text-error hover:bg-error/10"
+                            : "border-primary text-primary hover:bg-primary/10"
+                        }`}
+                      >
+                        {cambiandoActivoId === u.id ? "…" : u.activo ? "Desactivar" : "Activar"}
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -286,9 +288,9 @@ export default function PanelAdmin() {
           {actividad && actividad.length > 0 && (
             <div className="flex flex-col gap-2">
               {actividad.map((r) => (
-                <div key={r.id} className="bg-card border border-border rounded-xl px-4 py-3 flex items-center gap-4">
+                <div key={r.id} className="bg-card border border-border rounded-xl px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                   <div className="flex-1 min-w-0">
-                    <p className="text-text font-body text-sm truncate">
+                    <p className="text-text font-body text-sm">
                       <Link to={`/perfil/${r.usuario.username}`} className="text-primary hover:underline">
                         @{r.usuario.username}
                       </Link>
@@ -305,7 +307,7 @@ export default function PanelAdmin() {
                   <button
                     onClick={() => handleBorrarResena(r)}
                     disabled={borrandoResenaId === r.id}
-                    className="font-body text-xs px-3 py-1.5 rounded-input border border-error text-error hover:bg-error/10 transition-colors disabled:opacity-50 shrink-0"
+                    className="font-body text-xs px-3 py-1.5 rounded-input border border-error text-error hover:bg-error/10 transition-colors disabled:opacity-50 shrink-0 self-start sm:self-auto"
                   >
                     {borrandoResenaId === r.id ? "…" : "Borrar"}
                   </button>

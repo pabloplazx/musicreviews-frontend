@@ -46,29 +46,29 @@ export default function DetalleArtista() {
   }
 
   return (
-    <main className="bg-background min-h-screen py-10">
-      <div className="max-w-300 mx-auto px-12">
+    <main className="bg-background min-h-screen py-8 sm:py-10">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12">
 
         {/* Header del artista */}
-        <div className="flex gap-8 items-start mb-12">
+        <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 items-center sm:items-start text-center sm:text-left mb-12">
 
           {/* Avatar */}
           {artista.foto
-            ? <img src={artista.foto} alt={artista.nombre} className="w-36 h-36 rounded-full object-cover border-2 border-primary shrink-0" />
-            : <div className="w-36 h-36 rounded-full border-2 border-primary flex items-center justify-center shrink-0 bg-card">
+            ? <img src={artista.foto} alt={artista.nombre} className="w-32 h-32 sm:w-36 sm:h-36 rounded-full object-cover border-2 border-primary shrink-0" />
+            : <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-full border-2 border-primary flex items-center justify-center shrink-0 bg-card">
                 <span className="text-primary text-4xl">♪</span>
               </div>
           }
 
           {/* Info */}
-          <div className="flex flex-col gap-3 pt-2">
-            <h1 className="text-text font-heading font-bold text-4xl">{artista.nombre}</h1>
+          <div className="flex flex-col gap-3 pt-2 items-center sm:items-start">
+            <h1 className="text-text font-heading font-bold text-3xl sm:text-4xl">{artista.nombre}</h1>
             <p className="text-muted font-body text-sm">
               {[artista.pais, artista.genero].filter(Boolean).join(" · ") || "—"}
             </p>
 
             {/* Stats — solo álbumes (el backend no expone media ni total reseñas por artista) */}
-            <div className="flex border border-border rounded-xl overflow-hidden mt-1 self-start">
+            <div className="flex border border-border rounded-xl overflow-hidden mt-1">
               <div className="flex flex-col items-center px-8 py-4">
                 <span className="text-primary font-heading font-bold text-xl">
                   {discografia?.length ?? "—"}
@@ -97,7 +97,7 @@ export default function DetalleArtista() {
             <p className="text-muted font-body">Este artista aún no tiene álbumes en la BD.</p>
           )}
           {discografia && discografia.length > 0 && (
-            <div className="grid grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
               {discografia.map((a) => {
                 const anio = a.fechaLanzamiento ? new Date(a.fechaLanzamiento).getFullYear() : null;
                 return (

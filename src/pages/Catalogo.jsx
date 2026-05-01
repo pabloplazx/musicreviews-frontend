@@ -83,12 +83,12 @@ export default function Catalogo() {
   const totalElementos = datos?.page?.totalElements ?? 0;
 
   return (
-    <main className="bg-background min-h-screen py-10">
-      <div className="max-w-300 mx-auto px-12">
+    <main className="bg-background min-h-screen py-8 sm:py-10">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12">
 
         {/* Cabecera */}
         <div className="mb-6">
-          <h1 className="text-text font-heading font-bold text-4xl">Catálogo</h1>
+          <h1 className="text-text font-heading font-bold text-3xl sm:text-4xl">Catálogo</h1>
           <p className="text-muted font-body text-sm mt-1">
             {totalElementos > 0 ? `${totalElementos} álbumes` : "—"}
           </p>
@@ -103,8 +103,8 @@ export default function Catalogo() {
           />
         </div>
 
-        {/* Chips de género + selector orden */}
-        <div className="flex items-center justify-between mb-8">
+        {/* Chips de género + selector orden — apilan en móvil */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
           <div className="flex items-center gap-2 flex-wrap">
             {generos
               ? generos.map((g) => (
@@ -117,7 +117,7 @@ export default function Catalogo() {
                 ))
               : <span className="text-muted font-body text-sm">Cargando géneros…</span>}
           </div>
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 lg:shrink-0">
             <span className="text-muted font-body text-sm">Ordenar por:</span>
             <SelectOrden
               opciones={OPCIONES_ORDEN}
@@ -137,7 +137,7 @@ export default function Catalogo() {
           <p className="text-muted font-body py-8">Cargando álbumes…</p>
         )}
         {!error && datos && albumes.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <div className="flex flex-col items-center justify-center py-16 sm:py-24 gap-4">
             <span className="text-primary text-6xl">♪</span>
             <p className="text-text font-heading font-bold text-2xl">Sin resultados</p>
             <p className="text-muted font-body text-sm text-center">
@@ -146,7 +146,7 @@ export default function Catalogo() {
           </div>
         )}
         {!error && albumes.length > 0 && (
-          <div className={`grid grid-cols-5 gap-6 mb-10 transition-opacity ${cargando ? "opacity-50" : ""}`}>
+          <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6 mb-10 transition-opacity ${cargando ? "opacity-50" : ""}`}>
             {albumes.map((a) => (
               <CatalogoCard
                 key={a.id}

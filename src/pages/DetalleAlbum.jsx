@@ -122,23 +122,23 @@ export default function DetalleAlbum() {
     <main className="bg-background min-h-screen">
 
       {/* Header del álbum */}
-      <section className="bg-card border-b border-border py-10">
-        <div className="max-w-300 mx-auto px-12 flex gap-10">
+      <section className="bg-card border-b border-border py-8 lg:py-10">
+        <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12 flex flex-col sm:flex-row gap-6 sm:gap-10 items-center sm:items-start text-center sm:text-left">
 
           {/* Portada */}
           {album.portada
-            ? <img src={album.portada} alt={album.titulo} className="w-48 h-48 rounded-xl object-cover shrink-0" />
-            : <PortadaPlaceholder className="w-48 h-48 rounded-xl shrink-0" />
+            ? <img src={album.portada} alt={album.titulo} className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl object-cover shrink-0" />
+            : <PortadaPlaceholder className="w-40 h-40 sm:w-48 sm:h-48 rounded-xl shrink-0" />
           }
 
           {/* Info */}
-          <div className="flex flex-col justify-center gap-3">
+          <div className="flex flex-col justify-center gap-3 items-center sm:items-start w-full">
             {album.genero && (
-              <span className="self-start px-3 py-1 bg-primary/20 text-primary font-body text-xs rounded-full capitalize">
+              <span className="px-3 py-1 bg-primary/20 text-primary font-body text-xs rounded-full capitalize">
                 {album.genero}
               </span>
             )}
-            <h1 className="text-text font-heading font-bold text-4xl">{album.titulo}</h1>
+            <h1 className="text-text font-heading font-bold text-2xl sm:text-3xl lg:text-4xl">{album.titulo}</h1>
             <p className="text-muted font-body text-sm">
               <Link to={`/artista/${album.artista.id}`} className="hover:text-primary transition-colors">
                 {album.artista.nombre}
@@ -146,7 +146,7 @@ export default function DetalleAlbum() {
               {anio && ` · ${anio}`}
             </p>
             {puntuacionMedia != null && (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                 <Estrellas cantidad={puntuacionMedia} />
                 <span className="text-primary font-heading font-bold text-sm">{puntuacionMedia.toFixed(1)}</span>
                 <span className="text-muted font-body text-xs">
@@ -154,12 +154,12 @@ export default function DetalleAlbum() {
                 </span>
               </div>
             )}
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               {miResena ? (
                 <Link
                   to="/editar-resena"
                   state={{ albumId: album.id }}
-                  className="flex items-center gap-2 bg-primary text-background font-body text-sm font-medium px-5 py-2.5 rounded-input hover:bg-secondary transition-colors"
+                  className="flex items-center justify-center gap-2 bg-primary text-background font-body text-sm font-medium px-5 py-2.5 rounded-input hover:bg-secondary transition-colors"
                 >
                   ✎ Editar mi reseña
                 </Link>
@@ -167,7 +167,7 @@ export default function DetalleAlbum() {
                 <Link
                   to="/crear-resena"
                   state={{ albumId: album.id }}
-                  className="flex items-center gap-2 bg-primary text-background font-body text-sm font-medium px-5 py-2.5 rounded-input hover:bg-secondary transition-colors"
+                  className="flex items-center justify-center gap-2 bg-primary text-background font-body text-sm font-medium px-5 py-2.5 rounded-input hover:bg-secondary transition-colors"
                 >
                   ✎ Escribir reseña
                 </Link>
@@ -176,7 +176,7 @@ export default function DetalleAlbum() {
                 <button
                   onClick={handleToggleFavorito}
                   disabled={favoritoOcupado}
-                  className={`flex items-center gap-2 border font-body text-sm px-5 py-2.5 rounded-input transition-colors disabled:opacity-50 ${
+                  className={`flex items-center justify-center gap-2 border font-body text-sm px-5 py-2.5 rounded-input transition-colors disabled:opacity-50 ${
                     favorito
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border text-text hover:border-primary hover:text-primary"
@@ -187,7 +187,7 @@ export default function DetalleAlbum() {
               ) : (
                 <Link
                   to="/login"
-                  className="flex items-center gap-2 border border-border text-muted font-body text-sm px-5 py-2.5 rounded-input hover:border-primary hover:text-primary transition-colors"
+                  className="flex items-center justify-center gap-2 border border-border text-muted font-body text-sm px-5 py-2.5 rounded-input hover:border-primary hover:text-primary transition-colors"
                 >
                   ♡ Inicia sesión para guardar
                 </Link>
@@ -201,7 +201,7 @@ export default function DetalleAlbum() {
         </div>
       </section>
 
-      <div className="max-w-300 mx-auto px-12 py-10">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12 py-8 sm:py-10">
 
         {/* Reseñas */}
         <SectionTitle>Reseñas</SectionTitle>
@@ -211,10 +211,10 @@ export default function DetalleAlbum() {
         {tieneResenas && (
           <div className="flex flex-col gap-4 mb-12">
             {resenas.map((r) => (
-              <div key={r.id} className="bg-card border border-border rounded-xl px-6 py-5 flex gap-4">
+              <div key={r.id} className="bg-card border border-border rounded-xl px-4 sm:px-6 py-5 flex gap-4">
                 <Avatar nombre={r.usuario?.username} />
                 <div className="flex flex-col gap-1 flex-1 min-w-0">
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3">
                     <Link
                       to={`/perfil/${r.usuario?.username}`}
                       className="text-text font-body text-sm font-medium hover:text-primary transition-colors"
@@ -228,7 +228,7 @@ export default function DetalleAlbum() {
                   </div>
                   <Estrellas cantidad={r.puntuacion} />
                   {r.comentario && (
-                    <p className="text-muted font-body text-sm mt-1">"{r.comentario}"</p>
+                    <p className="text-muted font-body text-sm mt-1 break-words">"{r.comentario}"</p>
                   )}
                 </div>
               </div>
@@ -257,7 +257,7 @@ export default function DetalleAlbum() {
         {masDelArtista && masDelArtista.length > 0 && (
           <div>
             <SectionTitle>Más de {album.artista.nombre}</SectionTitle>
-            <div className="grid grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
               {masDelArtista.map((a) => (
                 <Link key={a.id} to={`/album/${a.id}`} className="flex flex-col gap-2 group">
                   {a.portada

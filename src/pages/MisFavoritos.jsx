@@ -51,11 +51,11 @@ export default function MisFavoritos() {
   const tieneFavoritos = favoritos.length > 0;
 
   return (
-    <main className="bg-background min-h-screen py-10">
-      <div className="max-w-300 mx-auto px-12">
+    <main className="bg-background min-h-screen py-8 sm:py-10">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12">
 
         <div className="mb-8">
-          <h1 className="text-text font-heading font-bold text-4xl">Mis Favoritos</h1>
+          <h1 className="text-text font-heading font-bold text-3xl sm:text-4xl">Mis Favoritos</h1>
           {tieneFavoritos && (
             <p className="text-muted font-body text-sm mt-1">
               {favoritos.length} {favoritos.length === 1 ? "álbum guardado" : "álbumes guardados"}
@@ -64,7 +64,7 @@ export default function MisFavoritos() {
         </div>
 
         {tieneFavoritos ? (
-          <div className="grid grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {favoritos.map((f) => (
               <Link
                 key={f.id}
@@ -94,7 +94,7 @@ export default function MisFavoritos() {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-32 gap-4">
+          <div className="flex flex-col items-center justify-center py-20 sm:py-32 gap-4">
             <span className="text-border text-6xl">♡</span>
             <p className="text-text font-heading font-bold text-2xl">Aún no tienes favoritos</p>
             <p className="text-muted font-body text-sm text-center">

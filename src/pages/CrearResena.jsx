@@ -51,7 +51,7 @@ export default function CrearResena() {
   // Sin albumId: pantalla de aviso para que el usuario llegue desde un álbum.
   if (!albumId) {
     return (
-      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-12 text-center gap-4">
+      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-12 text-center gap-4">
         <span className="text-primary text-6xl">♪</span>
         <h1 className="text-text font-heading font-bold text-2xl">¿Qué álbum quieres reseñar?</h1>
         <p className="text-muted font-body text-sm max-w-md">
@@ -70,24 +70,24 @@ export default function CrearResena() {
   return (
     <div className="bg-background min-h-screen flex flex-col">
 
-      <header className="bg-card border-b border-border px-12 py-4 flex items-center justify-between relative">
-        <span className="text-primary font-heading font-bold text-lg">♪ MusicReviews</span>
-        <h1 className="text-text font-heading font-bold text-lg absolute left-1/2 -translate-x-1/2">
+      <header className="bg-card border-b border-border px-4 sm:px-6 lg:px-12 py-4 flex items-center justify-between gap-3 relative">
+        <span className="text-primary font-heading font-bold text-lg shrink-0">♪ <span className="hidden sm:inline">MusicReviews</span></span>
+        <h1 className="text-text font-heading font-bold text-base sm:text-lg lg:absolute lg:left-1/2 lg:-translate-x-1/2">
           Nueva reseña
         </h1>
         <button
           onClick={() => navigate(-1)}
-          className="border border-border text-text font-body text-sm px-4 py-2 rounded-input hover:border-primary hover:text-primary transition-colors"
+          className="border border-border text-text font-body text-sm px-3 sm:px-4 py-2 rounded-input hover:border-primary hover:text-primary transition-colors shrink-0"
         >
           Cancelar
         </button>
       </header>
 
-      <main className="flex-1 max-w-300 mx-auto px-12 py-12 w-full">
-        <div className="flex gap-16 items-start">
+      <main className="flex-1 max-w-300 mx-auto px-4 sm:px-6 lg:px-12 py-8 lg:py-12 w-full">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-stretch lg:items-start">
 
           {/* Izquierda — card del álbum */}
-          <div className="bg-card border border-border rounded-xl overflow-hidden w-72 shrink-0">
+          <div className="bg-card border border-border rounded-xl overflow-hidden w-full max-w-sm mx-auto lg:w-72 lg:max-w-none lg:mx-0 lg:shrink-0">
             {album?.portada
               ? <img src={album.portada} alt={album.titulo} className="w-full aspect-square object-cover" />
               : <PortadaPlaceholder className="w-full aspect-square" iconSize="text-6xl" />
@@ -112,7 +112,7 @@ export default function CrearResena() {
           </div>
 
           {/* Derecha — formulario */}
-          <div className="flex flex-col gap-6 flex-1">
+          <div className="flex flex-col gap-6 flex-1 min-w-0">
 
             {error && (
               <div className="bg-error/10 border border-error rounded-xl px-4 py-3">
@@ -135,7 +135,7 @@ export default function CrearResena() {
                   onChange={(e) => setComentario(e.target.value.slice(0, MAX_CHARS))}
                   placeholder="Escribe tu opinión sobre este álbum…"
                   rows={10}
-                  className="w-full bg-input border border-border rounded-xl px-5 py-4 text-text font-body text-sm placeholder:text-muted resize-none focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-input border border-border rounded-xl px-5 py-4 pb-8 text-text font-body text-sm placeholder:text-muted resize-none focus:outline-none focus:border-primary transition-colors"
                 />
                 <span className="absolute bottom-3 right-4 text-muted font-body text-xs">
                   {comentario.length} / {MAX_CHARS}
@@ -146,7 +146,7 @@ export default function CrearResena() {
             <button
               disabled={puntuacion === 0 || enviando}
               onClick={handlePublicar}
-              className="bg-primary text-background font-heading font-medium text-sm px-10 py-3 rounded-input hover:bg-secondary transition-colors disabled:opacity-40 disabled:cursor-not-allowed self-start"
+              className="bg-primary text-background font-heading font-medium text-sm w-full sm:w-auto px-10 py-3 rounded-input hover:bg-secondary transition-colors disabled:opacity-40 disabled:cursor-not-allowed sm:self-start"
             >
               {enviando ? "Publicando…" : "Publicar reseña"}
             </button>

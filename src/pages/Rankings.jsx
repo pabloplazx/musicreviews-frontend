@@ -64,17 +64,17 @@ export default function Rankings() {
   const maxGenero = generos && generos.length > 0 ? generos[0].total : 1;
 
   return (
-    <main className="bg-background min-h-screen py-10">
-      <div className="max-w-300 mx-auto px-12">
+    <main className="bg-background min-h-screen py-8 sm:py-10">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12">
 
-        <h1 className="text-text font-heading font-bold text-4xl mb-8">Rankings</h1>
+        <h1 className="text-text font-heading font-bold text-3xl sm:text-4xl mb-8">Rankings</h1>
 
         {error && (
           <p className="text-error font-body py-8">No se pudieron cargar los rankings: {error}</p>
         )}
 
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {[
             { label: "Álbumes", valor: resumen?.totalAlbumes },
             { label: "Artistas", valor: resumen?.totalArtistas },
@@ -91,7 +91,7 @@ export default function Rankings() {
         </div>
 
         {/* Top Álbumes + Por género */}
-        <div className="grid grid-cols-2 gap-10 mb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 mb-10">
 
           <div>
             <SectionTitle>Top Álbumes</SectionTitle>
@@ -136,7 +136,7 @@ export default function Rankings() {
         </div>
 
         {/* Top Artistas + Actividad reciente */}
-        <div className="grid grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
 
           <div>
             <SectionTitle>Top Artistas</SectionTitle>

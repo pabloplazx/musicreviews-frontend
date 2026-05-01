@@ -73,11 +73,11 @@ export default function PerfilUsuario() {
   const esMiPerfil = sesion?.id === perfil.id;
 
   return (
-    <main className="bg-background min-h-screen py-10">
-      <div className="max-w-300 mx-auto px-12">
+    <main className="bg-background min-h-screen py-8 sm:py-10">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12">
 
         {/* Header del perfil */}
-        <div className="flex items-start gap-6 mb-8 relative">
+        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 mb-8 text-center sm:text-left">
 
           {/* Avatar */}
           {perfil.fotoPerfil
@@ -90,8 +90,8 @@ export default function PerfilUsuario() {
           }
 
           {/* Info */}
-          <div className="flex flex-col gap-2 pt-1">
-            <h1 className="text-text font-heading font-bold text-3xl">{perfil.username}</h1>
+          <div className="flex flex-col gap-2 pt-1 items-center sm:items-start flex-1 min-w-0">
+            <h1 className="text-text font-heading font-bold text-2xl sm:text-3xl">{perfil.username}</h1>
             <p className="text-muted font-body text-sm">
               {perfil.fechaRegistro && `Miembro desde ${formatearMes(perfil.fechaRegistro)}`}
             </p>
@@ -99,13 +99,13 @@ export default function PerfilUsuario() {
               <p className="text-text font-body text-sm max-w-lg whitespace-pre-line mt-1">{perfil.bio}</p>
             )}
             <div className="flex gap-6 mt-1">
-              <div>
+              <div className="text-center sm:text-left">
                 <span className="text-primary font-heading font-bold text-2xl">
                   {resenas?.length ?? "—"}
                 </span>
                 <p className="text-muted font-body text-xs">Reseñas</p>
               </div>
-              <div>
+              <div className="text-center sm:text-left">
                 <span className="text-primary font-heading font-bold text-2xl">
                   {favoritos?.length ?? (token ? "—" : "?")}
                 </span>
@@ -118,7 +118,7 @@ export default function PerfilUsuario() {
           {esMiPerfil && (
             <Link
               to="/editar-perfil"
-              className="absolute top-0 right-0 flex items-center gap-2 border border-border text-text font-body text-sm px-4 py-2 rounded-input hover:border-primary hover:text-primary transition-colors"
+              className="flex items-center gap-2 border border-border text-text font-body text-sm px-4 py-2 rounded-input hover:border-primary hover:text-primary transition-colors shrink-0"
             >
               ✏ Editar perfil
             </Link>
@@ -161,11 +161,11 @@ export default function PerfilUsuario() {
                   <Link
                     key={r.id}
                     to={`/album/${r.album.id}`}
-                    className="bg-card border border-border rounded-xl p-5 flex gap-5 hover:border-primary transition-colors relative"
+                    className="bg-card border border-border rounded-xl p-4 sm:p-5 flex gap-4 sm:gap-5 hover:border-primary transition-colors relative"
                   >
                     {r.album.portada
-                      ? <img src={r.album.portada} alt={r.album.titulo} className="w-24 h-24 rounded-lg object-cover shrink-0" />
-                      : <PortadaPlaceholder className="w-24 h-24 rounded-lg shrink-0" iconSize="text-2xl" />
+                      ? <img src={r.album.portada} alt={r.album.titulo} className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg object-cover shrink-0" />
+                      : <PortadaPlaceholder className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg shrink-0" iconSize="text-2xl" />
                     }
                     <div className="flex flex-col gap-1 flex-1 min-w-0">
                       <p className="text-text font-heading font-bold text-base">{r.album.titulo}</p>
@@ -176,7 +176,7 @@ export default function PerfilUsuario() {
                       )}
                     </div>
                     <div className="flex flex-col items-end gap-2 shrink-0">
-                      <span className="text-muted font-body text-xs">{formatearFecha(r.fechaCreacion)}</span>
+                      <span className="text-muted font-body text-xs whitespace-nowrap">{formatearFecha(r.fechaCreacion)}</span>
                       {esMiPerfil && (
                         <button
                           onClick={(e) => {
@@ -212,7 +212,7 @@ export default function PerfilUsuario() {
               </p>
             )}
             {token && favoritos && favoritos.length > 0 && (
-              <div className="grid grid-cols-6 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 {favoritos.map((f) => (
                   <Link
                     key={f.id}

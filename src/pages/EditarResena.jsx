@@ -74,7 +74,7 @@ export default function EditarResena() {
   // Sin albumId: aviso y vuelta al perfil
   if (!albumId) {
     return (
-      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-12 text-center gap-4">
+      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-12 text-center gap-4">
         <span className="text-primary text-6xl">♪</span>
         <h1 className="text-text font-heading font-bold text-2xl">¿Qué reseña quieres editar?</h1>
         <p className="text-muted font-body text-sm max-w-md">
@@ -92,7 +92,7 @@ export default function EditarResena() {
 
   if (error && !resena) {
     return (
-      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-12 text-center gap-4">
+      <div className="bg-background min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-12 text-center gap-4">
         <p className="text-error font-body">{error}</p>
         <Link to="/" className="text-primary hover:underline">← Volver al inicio</Link>
       </div>
@@ -113,24 +113,24 @@ export default function EditarResena() {
   return (
     <div className="bg-background min-h-screen flex flex-col">
 
-      <header className="bg-card border-b border-border px-12 py-4 flex items-center justify-between relative">
-        <span className="text-primary font-heading font-bold text-lg">♪ MusicReviews</span>
-        <h1 className="text-text font-heading font-bold text-lg absolute left-1/2 -translate-x-1/2">
+      <header className="bg-card border-b border-border px-4 sm:px-6 lg:px-12 py-4 flex items-center justify-between gap-3 relative">
+        <span className="text-primary font-heading font-bold text-lg shrink-0">♪ <span className="hidden sm:inline">MusicReviews</span></span>
+        <h1 className="text-text font-heading font-bold text-base sm:text-lg lg:absolute lg:left-1/2 lg:-translate-x-1/2">
           Editar reseña
         </h1>
         <button
           onClick={() => navigate(-1)}
-          className="text-muted font-body text-sm hover:text-primary transition-colors"
+          className="text-muted font-body text-sm hover:text-primary transition-colors shrink-0"
         >
           Cancelar
         </button>
       </header>
 
-      <main className="flex-1 max-w-300 mx-auto px-12 py-12 w-full">
-        <div className="flex gap-16 items-start">
+      <main className="flex-1 max-w-300 mx-auto px-4 sm:px-6 lg:px-12 py-8 lg:py-12 w-full">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 items-stretch lg:items-start">
 
           {/* Izquierda */}
-          <div className="flex flex-col gap-4 w-72 shrink-0">
+          <div className="flex flex-col gap-4 w-full max-w-sm mx-auto lg:w-72 lg:max-w-none lg:mx-0 lg:shrink-0">
 
             <div className="bg-card border border-border rounded-xl overflow-hidden">
               {album?.portada
@@ -164,7 +164,7 @@ export default function EditarResena() {
           </div>
 
           {/* Derecha — formulario */}
-          <div className="flex flex-col gap-6 flex-1">
+          <div className="flex flex-col gap-6 flex-1 min-w-0">
 
             {error && (
               <div className="bg-error/10 border border-error rounded-xl px-4 py-3">
@@ -184,7 +184,7 @@ export default function EditarResena() {
                   value={comentario}
                   onChange={(e) => setComentario(e.target.value.slice(0, MAX_CHARS))}
                   rows={10}
-                  className="w-full bg-input border border-border rounded-xl px-5 py-4 text-text font-body text-sm placeholder:text-muted resize-none focus:outline-none focus:border-primary transition-colors"
+                  className="w-full bg-input border border-border rounded-xl px-5 py-4 pb-8 text-text font-body text-sm placeholder:text-muted resize-none focus:outline-none focus:border-primary transition-colors"
                 />
                 <span className="absolute bottom-3 right-4 text-muted font-body text-xs">
                   {comentario.length} / {MAX_CHARS}
@@ -192,24 +192,24 @@ export default function EditarResena() {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
               <button
                 onClick={handleGuardar}
                 disabled={puntuacion === 0 || guardando || borrando}
-                className="bg-primary text-background font-heading font-medium text-sm px-8 py-3 rounded-input hover:bg-secondary transition-colors disabled:opacity-50"
+                className="bg-primary text-background font-heading font-medium text-sm w-full sm:w-auto px-8 py-3 rounded-input hover:bg-secondary transition-colors disabled:opacity-50"
               >
                 {guardando ? "Guardando…" : "Guardar cambios"}
               </button>
               <button
                 onClick={handleEliminar}
                 disabled={guardando || borrando}
-                className="border border-error text-error font-body text-sm px-8 py-3 rounded-input hover:bg-error/10 transition-colors disabled:opacity-50"
+                className="border border-error text-error font-body text-sm w-full sm:w-auto px-8 py-3 rounded-input hover:bg-error/10 transition-colors disabled:opacity-50"
               >
                 {borrando ? "Eliminando…" : "Eliminar reseña"}
               </button>
               <button
                 onClick={() => navigate(-1)}
-                className="text-muted font-body text-sm hover:text-text transition-colors"
+                className="text-muted font-body text-sm hover:text-text transition-colors py-2"
               >
                 Cancelar
               </button>

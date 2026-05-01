@@ -56,10 +56,10 @@ export default function Busqueda() {
   const mostrarInicio = filtroActivo === "Todo" && busqueda === "";
 
   return (
-    <main className="bg-background min-h-screen py-10">
-      <div className="max-w-300 mx-auto px-12">
+    <main className="bg-background min-h-screen py-8 sm:py-10">
+      <div className="max-w-300 mx-auto px-4 sm:px-6 lg:px-12">
 
-        <h1 className="text-text font-heading font-bold text-4xl mb-6">Buscar</h1>
+        <h1 className="text-text font-heading font-bold text-3xl sm:text-4xl mb-6">Buscar</h1>
 
         <div className="mb-5">
           <SearchBar
@@ -69,8 +69,8 @@ export default function Busqueda() {
           />
         </div>
 
-        {/* Chips de filtro (decoración) */}
-        <div className="flex items-center gap-2 mb-10">
+        {/* Chips de filtro — wrap en móvil para evitar overflow horizontal */}
+        <div className="flex items-center gap-2 mb-10 flex-wrap">
           {FILTROS.map((f) => (
             <GenreChip
               key={f}
@@ -99,7 +99,7 @@ export default function Busqueda() {
               </div>
             )}
             {resultados && resultados.length > 0 && (
-              <div className={`grid grid-cols-4 gap-6 transition-opacity ${buscando ? "opacity-50" : ""}`}>
+              <div className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 transition-opacity ${buscando ? "opacity-50" : ""}`}>
                 {resultados.map((a) => (
                   <CatalogoCard
                     key={a.id}
@@ -122,7 +122,7 @@ export default function Busqueda() {
               <SectionTitle>Tendencias</SectionTitle>
               {!tendencias && <p className="text-muted font-body">Cargando…</p>}
               {tendencias && (
-                <div className="grid grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                   {tendencias.map((item) => (
                     <CatalogoCard
                       key={item.album.id}
